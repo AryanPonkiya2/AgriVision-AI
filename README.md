@@ -105,7 +105,7 @@ This project was built as an academic AI & Machine Learning application under th
 
 ### Team Leaders:
 *   👑 **Aryan Ponkiya** — [aryanpatel09395@gmail.com](mailto:aryanpatel09395@gmail.com)
-*   👑 **Vraj Akbari** — [vrajakbari@gmail.com](mailto:vrajakbari@gmail.com)
+*   👑 **Kausar rami** — [ramikausar@gmail.com](mailto:ramikausar@gmail.com)
 
 **Department**: AI & Machine Learning Department  
 **Institution**: Ganpat University (2025–2026 Academic Year)
