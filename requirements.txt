@@ -4,3 +4,4 @@ gunicorn
 pillow
 opencv-python-headless
 python-dotenv
+requests
