@@ -239,23 +239,21 @@
 
 <body>
 
-    <nav class="animate-up">
-        <a href="{{ url_for('home') }}" class="logo" style="text-decoration: none; font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #10b981, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+nav class="animate-up">
         <a href="{{ url_for('home') }}" class="logo agrivision-logo-link" style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
             <span class="logo-img-wrapper">
                 <img src="{{ url_for('static', filename='Main_Logo.png') }}" alt="AgriVision Logo" class="logo-img">
             </span>
-        <span style="-webkit-text-fill-color: #fff;">AgriVison</span>
+            <span class="agrivision-brand">Agri<span class="agrivision-accent">Vision</span></span>
         </a>
         <ul class="nav-links">
-            <li><a href="{{ url_for('home') }}">Home</a></li>
-            <li><a href="{{ url_for('team') }}" id="nav-about">About Us</a></li>
+            <li><a href="{{ url_for('home') }}" class="active">Home</a></li>
+            <li><a href="{{ url_for('team') }}">About Us</a></li>
             <li><a href="{{ url_for('map_page') }}">Crop Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
         <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
     </nav>
-
     <main>
         <!-- ── Hero ───────────────────────────────────────────── -->
         <div class="team-hero animate-up delay-1">
