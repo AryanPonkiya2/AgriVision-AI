@@ -76,7 +76,6 @@ python-engineio==4.13.1
 python-nmap==0.7.1
 python-socketio==5.16.1
 pytweening==1.2.0
-pywin32==311
 requests==2.33.1
 rich==15.0.0
 ROPGadget==7.7
