@@ -210,22 +210,59 @@
     </nav>
 
     <main class="upload-wrapper">
-        <div class="upload-container animate-up delay-1">
-            <h2 id="scanner-title" style="font-size: 3.5rem; margin-bottom: 1rem; color: #fff;">AI Plant <span
-                    class="glow-text">Scanner</span></h2>
-            <p id="scanner-desc" style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 1.2rem;">Upload a leaf photo or scan directly with your device camera.</p>
+        <!-- Single Mode Display -->
+<div class="mode-switcher-container"
+    style="display: flex; justify-content: center; margin-bottom: 2.5rem;">
 
-            <!-- Mode Switcher -->
-            <div class="mode-switcher-container" style="display: flex; justify-content: center; margin-bottom: 2.5rem;">
-                <div class="mode-switcher" style="display: inline-flex; background: rgba(255, 255, 255, 0.03); padding: 0.35rem; border-radius: 30px; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 20px rgba(0,0,0,0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-                    <button type="button" id="mode-plant" class="mode-btn active" onclick="switchMode('plant')" style="background: linear-gradient(135deg, var(--primary), var(--primary-glow)); color: #000; border: none; padding: 0.6rem 2rem; border-radius: 25px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px;">
-                        🌿 Plant Leaf
-                    </button>
-                    <button type="button" id="mode-fruit" class="mode-btn" onclick="switchMode('fruit')" style="background: transparent; color: var(--text-light); border: none; padding: 0.6rem 2rem; border-radius: 25px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 8px;">
-                        🍎 Fruit / Crop
-                    </button>
-                </div>
-            </div>
+    <div style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 0.8rem 2.2rem;
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-light);
+        transition: all 0.3s ease;
+    ">
+
+        <span style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            font-weight: 700;
+        ">
+            🌿 Plant
+        </span>
+
+        <span style="
+            color: rgba(255,255,255,0.4);
+            font-size: 1.1rem;
+            font-weight: 300;
+        ">
+            /
+        </span>
+
+        <span style="
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-glow);
+            font-weight: 700;
+        ">
+            🍎 Fruits
+        </span>
+
+    </div>
+
+</div>
  
             <div class="upload-actions" style="display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 2.2rem;">
                 <button type="button" class="btn-primary" onclick="document.getElementById('file').click()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 16px; font-size: 1.1rem; padding: 0.9rem 2rem;">
