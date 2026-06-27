@@ -209,5 +209,5 @@ def upload():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-    print("Starting PlantCare AI Web Application...")
+    print("Starting AgriVison AI Web Application...")
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -14,4 +14,4 @@ def extract_text(pdf_path, output_path):
         out_file.write(text)
         
 if __name__ == "__main__":
-    extract_text("PlantCare AI_ Advanced Plant Disease Detection Using Transfer Learning.docx (1).pdf", "extracted_text.txt")
+    extract_text("AgriVison AI_ Advanced Plant Disease Detection Using Transfer Learning.docx (1).pdf", "extracted_text.txt")
