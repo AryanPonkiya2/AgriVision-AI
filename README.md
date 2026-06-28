@@ -1,116 +1,232 @@
-# 🌿 PlantCare AI — Advanced Plant Disease Detection System
+# 🌿 AgriVision - Your Farmer Assistant
 
-PlantCare AI is an intelligent, real-time plant disease detection web application developed for the AI & Machine Learning department at **Ganpat University**. By combining a futuristic, glassmorphic UI, a dynamic canvas simulation background, and the power of cloud-based Transfer Learning, the system allows users to instantly identify plant species and diagnose crop diseases using leaf images or live device cameras.
+### Smart Plant Disease Detection and Farmer Assistance Platform
 
 ---
 
-## 🚀 How to Run the Project
+## 📖 Overview
 
-Follow these steps to set up and run PlantCare AI on your local system:
+AgriVision is a farmer-focused application designed to help users identify plant diseases quickly using image analysis and provide useful information to support crop management decisions.
 
-### 1. Install Dependencies
-Open your terminal/command prompt, navigate to the project directory, and install the required Python libraries:
+Developed as an academic project at **Ganpat University**, the platform aims to make plant disease identification simple, accessible, and practical.
+
+---
+
+## 🚨 Problem Statement
+
+Many farmers struggle to identify plant diseases during the early stages of infection. Delayed diagnosis often leads to reduced crop quality, lower yields, and increased treatment costs.
+
+A simple and accessible digital solution can help farmers detect issues earlier and make informed decisions.
+
+---
+
+## 💡 Solution
+
+AgriVision allows users to upload plant images and receive disease information through an easy-to-use web interface.
+
+The system focuses on:
+
+* Early disease identification
+* Faster decision making
+* Improved accessibility to agricultural information
+* Supporting farmers with technology-driven solutions
+
+---
+
+## ✨ Key Features
+
+* 🌿 Plant disease identification
+* 📷 Image upload support
+* ⚡ Fast analysis and results
+* 🌐 Web-based interface
+* 👨‍🌾 Farmer-friendly design
+
+---
+
+## 🛠 Tech Stack
+
+| Category   | Technology                 |
+| ---------- | -------------------------- |
+| Frontend   | HTML, CSS, JavaScript      |
+| Backend    | Flask                      |
+| API        | Kindwise Plant Disease API |
+| Deployment | Render                     |
+| Tools      | Git, GitHub, VS Code       |
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+flowchart TD
+A[Upload Plant Image]
+--> B[Flask Backend]
+--> C[Image Processing]
+--> D[Kindwise API]
+--> E[Disease Information]
+--> F[Display Results]
+```
+
+---
+
+## 📂 Folder Structure
+
+```text
+AgriVision/
+│
+├── static/
+│   ├── images/
+│   ├── uploads/
+│   ├── Main_Logo.png
+│   └── style.css
+│
+├── templates/
+│   ├── home.html
+│   ├── upload.html
+│   ├── result.html
+│   ├── map.html
+│   └── team.html
+│
+├── uploads/
+├── test/
+│
+├── app.py
+├── requirements.txt
+├── runtime.txt
+├── .env
+├── .gitignore
+└── README.md
+```
+
+---
+
+## ⚙️ Installation
+
 ```bash
+git clone https://github.com/YOUR_USERNAME/AgriVision.git
+cd AgriVision
+
 pip install -r requirements.txt
-# Make sure the requests library is installed:
-pip install requests
 ```
 
-### 2. Configure the API Key
-Get your free API Key from the [Kindwise / Plant.id Dashboard](https://admin.kindwise.com/). 
-Create a file named `.env` in the project root directory and add your key:
+---
+
+## 📋 Prerequisites
+
+* Python 3.x
+* pip
+* Git
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root directory:
+
 ```env
-PLANT_ID_API_KEY=your_actual_api_key_here
+API_KEY=your_kindwise_api_key
 ```
-*(Alternatively, you can modify line 13 of `app.py` to paste your key directly as a default fallback).*
 
-### 3. Run the Application
-Launch the Flask development server:
+---
+
+## ▶️ Running the Project
+
 ```bash
 python app.py
 ```
-Wait for the terminal to display `* Debugger is active!` and `* Running on http://127.0.0.1:5000`.
 
-### 4. Open the Web Browser
-Open your browser and navigate to:
-👉 **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
-
-*(To stop the server, press `Ctrl + C` in your terminal).*
-
----
-
-## 🌟 Key Features
-
-### 1. Cloud-Based AI Diagnostics Core
-*   **Plant.id v3 Integration**: Replaces heavy local models with a high-performance REST API, enabling instant startup and lightweight hosting.
-*   **Dual Classification**: Concurrently identifies the **plant species** (e.g., Tomato) and **specific diseases** (e.g., Early Blight).
-*   **Actionable Care Guidelines**: Returns organic, chemical, and preventative treatment advice parsed directly from the API response or fell back onto custom localized expert recommendations.
-*   **Null-Safe Safety Layer**: Fully protected against empty identification outputs or invalid images, preventing server crashes.
-
-### 2. Live Web Camera Capture Interface
-*   **Native Camera Stream**: Enables real-time video capture using the device's webcam or mobile rear camera (`facingMode: "environment"`).
-*   **In-Memory Frame Capture**: Captures snapshots onto an offscreen canvas, serializes them as binary blobs, and injects them dynamically into the form using standard HTML `DataTransfer` file structures.
-
-### 3. Glassmorphic Cyber-Agri UI Theme
-*   **Futuristic Visual Design**: Built using HSL-tailored dark modes, smooth gradients, and glassmorphic translucent panels (using vanilla CSS backdrop-filters).
-*   **Dynamic Animations**: Smooth scroll-triggered fading actions, pulse glows, and a matrix-style scanning line during image classification.
-
-### 4. Physics-Based Interactive Background Canvas
-*   **Deterministic Foliage Generation**: Uses custom coordinate-keyed seeded random functions to draw complex fractal trees and grass blades, avoiding frame-to-frame rendering flicker.
-*   **Waving Grass Waves**: Renders grass as tapered 2D polygon paths filled with vertical green gradients that bend in response to continuous rolling sine waves.
-*   **Hierarchical Branch Swaying**: Uses recursive coordinate translations to sway tree limbs in response to wind gusts. Trunks sway slowly, while outer twigs wiggle at higher frequencies.
-*   **Parallax Depth Sorting**: Composites elements back-to-front (Far Hill -> Far Grass/Trees -> Near Hill -> Near Grass/Trees -> Floating Leaves) to create deep perspective layers.
-
----
-
-## 📂 Project Directory Structure
+Open your browser and visit:
 
 ```text
-plant-disease-detection/
-│
-├── app.py                      # Flask backend (API integration, routing, parsing)
-├── .env                        # Local configuration file storing the Plant.id API key
-├── mobilenetv2_best.keras      # (Deprecated) Original local training weights file
-├── requirements.txt            # Python library dependencies
-├── README.md                   # Complete system documentation
-│
-├── static/                     # Static assets & scripts
-│   ├── style.css               # Futuristic glassmorphic dark theme stylesheet
-│   ├── leaves.js               # Canvas foliage simulation & wind sway animation loop
-│   ├── logo1.png               # Brand icon
-│   └── uploads/                # Temporary directory storing uploaded leaf photos
-│
-└── templates/                  # Flask HTML view templates
-    ├── home.html               # Main welcome dashboard
-    ├── about.html              # Architecture & dataset specifications page
-    ├── team.html               # "About Us" project credits page
-    ├── upload.html             # Upload/Live Camera scanner interface
-    └── result.html             # Diagnostic dashboard (species, disease, confidence, recommendations)
+http://127.0.0.1:5000
 ```
 
 ---
 
-## 🧠 Technologies Used
+## 📚 Usage Guide
 
-*   **Backend**: Python, Flask (web framework)
-*   **APIs & Networking**: requests (HTTP library), base64 (encoding), Plant.id v3 API (Kindwise)
-*   **Frontend Logic**: Vanilla JavaScript (HTML5 Canvas 2D API, MediaDevices Camera API)
-*   **Styling**: HTML5, CSS3 Grid/Flexbox (incorporating custom linear-gradients & backdrop-blur filters)
+1. Open the application.
+2. Upload a plant image.
+3. Wait for the analysis to complete.
+4. View the disease information and recommendations.
 
 ---
 
-## 👨‍💻 Project Team & Credits
+## 🔌 API Integration
 
-This project was built as an academic AI & Machine Learning application under the supervision of **Ganpat University (Mehsana, Gujarat)**.
+* **Kindwise Plant Disease API— Used for plant disease identification and disease information retrieval.
 
-### Team Leaders:
-*   👑 **Aryan Ponkiya** — [aryanpatel09395@gmail.com](mailto:aryanpatel09395@gmail.com)
-*   👑 **Kausar rami** — [ramikausar@gmail.com](mailto:ramikausar@gmail.com)
+---
 
-**Department**: AI & Machine Learning Department  
-**Institution**: Ganpat University (2025–2026 Academic Year)
+## 📦 Requirements
+
+```text
+Flask==3.1.1
+gunicorn==26.0.0
+tensorflow==2.18.0
+numpy
+Pillow
+opencv-python-headless
+python-dotenv
+```
+
+---
+
+## 🚀 Deployment
+
+The application is deployed using **Render**.
+
+> ⚠️ The service may take a minute to start if it has been inactive for some time. This is due to free hosting limitations and only affects the first request.
+
+---
+
+## 🎥 Demo
+
+🌐 **Live Demo:TODO: Add your Render URL here
+
+---
+
+## 🚀 Future Improvements
+
+* 🇮🇳 Support for Indian regional languages.
+* 🌐 Automatic language translation.
+* 🗄️ Database integration for prediction history and analytics.
+* 🌾 Support for additional crops and diseases.
+* 📱 Mobile application support.
+* 📍 Nearby agriculture center recommendations.
+* ☁️ Improved cloud scalability and deployment.
+* 🔔 Disease alerts and notifications.
+* 📊 Historical crop analysis and reporting.
+* 🤖 Personalized farming recommendations.
+
+---
+
+## 👥 Team Members
+
+* **Aryan Ponkiya
+* **Kausar Rami**
 
 ---
 
 ## 📜 License
-This project is developed for educational, academic demonstration, and research purposes.
+
+This project is licensed under the MIT License. See the `LICENSE` file for more information.
+
+---
+
+## 🙏 Acknowledgements
+
+* Ganpat University
+* Kindwise Plant Disease API
+* Open Source Community
+* Farmers and Agricultural Researchers
+
+---
+
+<div align="center">
+
+### 🌱 Building smarter agriculture with technology
+
+Made with ❤️ by Team AgriVision
+
+</div>
