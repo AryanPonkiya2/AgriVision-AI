@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Key - read from .env, fallback to hardcoded
-API_KEY = os.environ.get("PLANT_ID_API_KEY", "SphXDZOx9AG5jGfSNMNyDw3JIPTaGLOVndHBbElmbdzt7JCgck")
+API_KEY = os.environ.get("PLANT_ID_API_KEY")
 
 # Correct endpoint with disease details requested
 API_URL = "https://api.plant.id/v3/identification"
