@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if scan_type == 'fruit' %}Fruit{% else %}Plant{% endif %} Analysis Result - AgriVision AI</title>
+    <title>{% if scan_type == 'fruit' %}Fruit{% else %}Plant{% endif %} Analysis Result - AgriVision </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
@@ -60,7 +60,7 @@
 
                 <div class="result-label"
                     style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1rem;">
-                    <span style="color: #fff;">AI Confidence Network Score</span>
+                    <span style="color: #fff;">Confidence Network Score</span>
                     <span
                         style="color: var(--primary); font-family: 'Space Grotesk'; font-weight: 800; font-size: 2rem; text-shadow: 0 0 15px rgba(16,185,129,0.5);">{{
                         confidence }}%</span>
