@@ -4,12 +4,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Crop Map - PlantCare AI</title>
+    <title>Weather Map - AgriVision</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
     <style>
+        /* Dark Navy Blue Cloudy Background Overrides */
+        body {
+            background-color: #070B19 !important;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.22) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(15, 23, 42, 0.5) 0%, transparent 70%),
+                linear-gradient(180deg, #040814 0%, #0a1329 100%) !important;
+            background-attachment: fixed !important;
+        }
+
+        /* Ambient Navy Blue Clouds Background */
+        .clouds-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ambient glowing background blobs */
+        .cloud-glow {
+            position: absolute;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.12) 0%, rgba(30, 58, 138, 0.05) 50%, transparent 80%);
+            border-radius: 50%;
+            filter: blur(100px);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            width: 900px;
+            height: 600px;
+            top: -100px;
+            left: -100px;
+            animation: floatGlow1 80s ease-in-out infinite alternate;
+        }
+
+        .glow-2 {
+            width: 1000px;
+            height: 700px;
+            bottom: -150px;
+            right: -150px;
+            background: radial-gradient(circle at center, rgba(29, 78, 216, 0.15) 0%, rgba(15, 23, 42, 0.05) 60%, transparent 80%);
+            animation: floatGlow2 100s ease-in-out infinite alternate;
+        }
+
+        /* Ambient Navy Blue Clouds Background */
+        .clouds-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Ambient glowing background blobs */
+        .cloud-glow {
+            position: absolute;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.12) 0%, rgba(30, 58, 138, 0.05) 50%, transparent 80%);
+            border-radius: 50%;
+            filter: blur(100px);
+            mix-blend-mode: screen;
+            pointer-events: none;
+        }
+
+        .glow-1 {
+            width: 900px;
+            height: 600px;
+            top: -100px;
+            left: -100px;
+            animation: floatGlow1 80s ease-in-out infinite alternate;
+        }
+
+        .glow-2 {
+            width: 1000px;
+            height: 700px;
+            bottom: -150px;
+            right: -150px;
+            background: radial-gradient(circle at center, rgba(29, 78, 216, 0.15) 0%, rgba(15, 23, 42, 0.05) 60%, transparent 80%);
+            animation: floatGlow2 100s ease-in-out infinite alternate;
+        }
+
+        /* Highly Realistic Morphing and Drifting Clouds */
+        .drifting-cloud {
+            position: absolute;
+            left: -800px; /* Start completely off-screen because they are very large */
+            pointer-events: none;
+            opacity: 0.12; /* Soft atmospheric visual integration */
+            display: flex;
+            align-items: flex-end;
+            filter: blur(18px); /* Soft, realistic fluffy outlines */
+        }
+        
+        .cloud-base {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(180, 200, 240, 0.7) 100%);
+            bottom: 0;
+            transition: all 0.5s ease;
+        }
+
+        .cloud-puff {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 50%;
+        }
+
+        /* Large Cloud Variant */
+        .cloud-large {
+            width: 500px;
+            height: 180px;
+        }
+        .cloud-large .cloud-base {
+            width: 500px;
+            height: 180px;
+            animation: morphBase 45s ease-in-out infinite alternate;
+        }
+        .cloud-large .puff-1 {
+            width: 240px;
+            height: 240px;
+            top: -100px;
+            left: 80px;
+            animation: morphPuffLeft 30s ease-in-out infinite alternate;
+        }
+        .cloud-large .puff-2 {
+            width: 300px;
+            height: 300px;
+            top: -150px;
+            right: 80px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(220,230,255,0.85) 100%);
+            animation: morphPuffRight 40s ease-in-out infinite alternate;
+        }
+
+        /* Huge Cloud Variant */
+        .cloud-huge {
+            width: 750px;
+            height: 230px;
+        }
+        .cloud-huge .cloud-base {
+            width: 750px;
+            height: 230px;
+            animation: morphBase 60s ease-in-out infinite alternate;
+        }
+        .cloud-huge .puff-1 {
+            width: 330px;
+            height: 330px;
+            top: -150px;
+            left: 120px;
+            animation: morphPuffLeft 35s ease-in-out infinite alternate;
+        }
+        .cloud-huge .puff-2 {
+            width: 400px;
+            height: 400px;
+            top: -200px;
+            right: 120px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(210,225,255,0.8) 100%);
+            animation: morphPuffRight 50s ease-in-out infinite alternate;
+        }
+
+        /* Shape Morphing Keyframes (Simulating real cloud shape evolution) */
+        @keyframes morphBase {
+            0% {
+                border-radius: 100px 90px 100px 90px / 90px 100px 90px 100px;
+            }
+            50% {
+                border-radius: 95px 105px 85px 105px / 105px 85px 105px 85px;
+            }
+            100% {
+                border-radius: 105px 95px 105px 95px / 85px 105px 85px 105px;
+            }
+        }
+
+        @keyframes morphPuffLeft {
+            0% {
+                border-radius: 50% 50% 48% 52% / 50% 52% 48% 50%;
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                border-radius: 46% 54% 52% 48% / 54% 46% 54% 46%;
+                transform: translate(15px, -10px) scale(1.08) rotate(3deg);
+            }
+            100% {
+                border-radius: 54% 46% 46% 54% / 46% 54% 50% 50%;
+                transform: translate(-10px, 8px) scale(0.95) rotate(-3deg);
+            }
+        }
+
+        @keyframes morphPuffRight {
+            0% {
+                border-radius: 52% 48% 50% 50% / 48% 52% 50% 50%;
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                border-radius: 55% 45% 54% 46% / 45% 55% 46% 54%;
+                transform: translate(-20px, 15px) scale(0.92) rotate(-2deg);
+            }
+            100% {
+                border-radius: 47% 53% 45% 55% / 53% 47% 55% 45%;
+                transform: translate(10px, -12px) scale(1.06) rotate(4deg);
+            }
+        }
+
+        /* Animation speeds */
+        .cloud-speed-slow {
+            animation: moveClouds 140s linear infinite;
+        }
+        .cloud-speed-medium {
+            animation: moveClouds 90s linear infinite;
+        }
+        .cloud-speed-fast {
+            animation: moveClouds 50s linear -25s infinite;
+        }
+
+        /* Offsets so clouds populate the screen instantly on page load */
+        .offset-delay-1 {
+            animation-delay: -70s;
+        }
+        .offset-delay-2 {
+            animation-delay: -45s;
+        }
+
+        @keyframes moveClouds {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(100vw + 1150px)); /* Clear screen completely */
+            }
+        }
+
+        @keyframes floatGlow1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(80px, 40px) scale(1.1); }
+        }
+
+        @keyframes floatGlow2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-60px, -80px) scale(1.05); }
+        }
+
         /* Interactive Map Section Styles */
         .map-section {
             padding: 4rem 5% 6rem;
@@ -69,7 +314,7 @@
 
         svg.india-map path.state-path {
             fill: rgba(255, 255, 255, 0.02);
-            stroke: rgba(16, 185, 129, 0.35); /* Translucent Emerald Green outline */
+            stroke: rgba(56, 189, 248, 0.35); /* Translucent Blue outline */
             stroke-width: 1.2;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
@@ -77,17 +322,17 @@
 
         /* Hover glowing styles */
         svg.india-map path.state-path:hover {
-            fill: rgba(52, 211, 153, 0.15); /* Translucent Light Emerald */
-            stroke: #34D399; /* Bright Mint Green */
+            fill: rgba(56, 189, 248, 0.15); /* Translucent Neon Blue */
+            stroke: #38BDF8; /* Neon Blue */
             stroke-width: 2.2;
-            filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.8));
+            filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8));
         }
 
         svg.india-map path.state-path.active-state {
-            fill: rgba(16, 185, 129, 0.25); /* Translucent Neon Emerald */
-            stroke: #10B981; /* Neon Emerald */
+            fill: rgba(2, 132, 199, 0.25); /* Translucent Deep Blue */
+            stroke: #0284C7; /* Ocean Blue */
             stroke-width: 2.5;
-            filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.9));
+            filter: drop-shadow(0 0 15px rgba(2, 132, 199, 0.9));
         }
 
         /* Dynamic State Details Card */
@@ -415,7 +660,7 @@
         /* Lakshadweep target enhancement */
         #ld-visible {
             fill: rgba(255, 255, 255, 0.02);
-            stroke: rgba(16, 185, 129, 0.35);
+            stroke: rgba(56, 189, 248, 0.35);
             stroke-width: 1.2px;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -427,22 +672,61 @@
         }
 
         #ld:hover ~ #ld-visible {
-            fill: rgba(52, 211, 153, 0.15) !important;
-            stroke: #34D399 !important;
+            fill: rgba(56, 189, 248, 0.15) !important;
+            stroke: #38BDF8 !important;
             stroke-width: 2.2px !important;
-            filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.8)) !important;
+            filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.8)) !important;
         }
 
         #ld.active-state ~ #ld-visible {
-            fill: rgba(16, 185, 129, 0.25) !important;
-            stroke: #10B981 !important;
+            fill: rgba(2, 132, 199, 0.25) !important;
+            stroke: #0284C7 !important;
             stroke-width: 2.5px !important;
-            filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.9)) !important;
+            filter: drop-shadow(0 0 15px rgba(2, 132, 199, 0.9)) !important;
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Ambient Navy Blue Clouds Background -->
+    <div class="clouds-container">
+        <!-- Glowing sky lighting -->
+        <div class="cloud-glow glow-1"></div>
+        <div class="cloud-glow glow-2"></div>
+
+        <!-- Drifting visible clouds (highly realistic morphing structures) -->
+        <!-- Huge Cloud 1 (Slow) -->
+        <div class="drifting-cloud cloud-huge cloud-speed-slow" style="top: 8%;">
+            <div class="cloud-base"></div>
+            <div class="cloud-puff puff-1"></div>
+            <div class="cloud-puff puff-2"></div>
+        </div>
+        <!-- Large Cloud 2 (Slow, Offset delay) -->
+        <div class="drifting-cloud cloud-large cloud-speed-slow offset-delay-1" style="top: 65%;">
+            <div class="cloud-base"></div>
+            <div class="cloud-puff puff-1"></div>
+            <div class="cloud-puff puff-2"></div>
+        </div>
+        <!-- Huge Cloud 3 (Medium) -->
+        <div class="drifting-cloud cloud-huge cloud-speed-medium" style="top: 22%;">
+            <div class="cloud-base"></div>
+            <div class="cloud-puff puff-1"></div>
+            <div class="cloud-puff puff-2"></div>
+        </div>
+        <!-- Large Cloud 4 (Medium, Offset delay) -->
+        <div class="drifting-cloud cloud-large cloud-speed-medium offset-delay-2" style="top: 42%;">
+            <div class="cloud-base"></div>
+            <div class="cloud-puff puff-1"></div>
+            <div class="cloud-puff puff-2"></div>
+        </div>
+        <!-- Huge Cloud 5 (Fast) -->
+        <div class="drifting-cloud cloud-huge cloud-speed-fast" style="top: 78%;">
+            <div class="cloud-base"></div>
+            <div class="cloud-puff puff-1"></div>
+            <div class="cloud-puff puff-2"></div>
+        </div>
+    </div>
 
     <nav class="animate-up">
         <a href="{{ url_for('home') }}" class="logo agrivision-logo-link" style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
@@ -454,9 +738,9 @@
         <ul class="nav-links">
             <li><a href="{{ url_for('home') }}" >Home</a></li>
             <li><a href="{{ url_for('team') }}">About Us</a></li>
-            <li><a href="{{ url_for('map_page') }}" class="active">Crop Map</a></li>
+            <li><a href="{{ url_for('map_page') }}">Crop Map</a></li>
             <li><a href="{{ url_for('export_map_page') }}">Export Map</a></li>
-            <li><a href="{{ url_for('weather_map_page') }}">Weather Map</a></li>
+            <li><a href="{{ url_for('weather_map_page') }}" class="active">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
         <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
@@ -464,9 +748,9 @@
 
     <main class="map-section">
         <div style="text-align: center; max-width: 800px; margin: 0 auto 1rem;" class="animate-up delay-1">
-            <h1 class="section-title" style="margin-bottom: 1rem; font-size: 4rem;">National <span class="glow-text">Crop Distribution</span></h1>
+            <h1 class="section-title" style="margin-bottom: 1rem; font-size: 4rem;">India <span class="glow-text">Weather Map</span></h1>
             <p style="color: var(--text-light); font-size: 1.25rem; line-height: 1.7;">
-                Explore common crops, soil conditions, and plant diseases across India. Hover over any state on the interactive map below to fetch live agricultural profiles.
+                Hover and Click any state to view <strong style="color:var(--primary)">live weather conditions</strong> — temperature, humidity, wind, and sky status — updated in real time from OpenWeatherMap.
             </p>
         </div>
 
@@ -670,52 +954,88 @@
 	/>
 	</g>
 </svg>
-                <div class="instructions-overlay">
-                    <span>💡</span> Click a state to zoom in & view plants; click again or click background to reset.
-                </div>
-                <!-- Plant Detail View Overlay -->
-                <div id="plant-detail-view">
-                    <button id="close-plant-view">← Back to Map</button>
-                    <div class="plant-detail-image-box">
-                        <img id="large-plant-image" src="" alt="Plant Image">
-                    </div>
-                    <div id="plant-detail-text">
-                        <!-- We will add details here later -->
-                    </div>
+                <div class="weather-instructions-overlay">
+                    <span>🌤️</span> Hover and click a state to view live weather
                 </div>
             </div>
 
-            <!-- Details Card -->
-            <div class="details-card">
-                <div class="details-header">
-                    <h2 id="card-state-name">Our Agriculture Nation</h2>
+            <!-- ░░ WEATHER CARD ░░ -->
+            <div class="weather-card" id="weather-card">
+                <!-- Loading / Default State -->
+                <div class="weather-default" id="weather-default">
+                    <div class="weather-globe-icon">🌏</div>
+                    <h2 class="weather-card-title">India Weather Map</h2>
+                    <p class="weather-card-subtitle">Hover over and click any state to fetch live weather conditions from across India.</p>
                 </div>
-                <div class="details-grid" style="display: flex; flex-direction: column;">
-                    <div class="details-row">
-                        <span class="details-label">Dominant Crop Varieties</span>
-                        <span class="details-value" id="card-crops">Rice, Wheat, Cotton, Sugarcane, Tea, Spices, Millets</span>
+
+                <!-- Live Weather Data (hidden until a state is clicked) -->
+                <div class="weather-live" id="weather-live" style="display:none;">
+                    <!-- State Name + City -->
+                    <div class="wc-header">
+                        <div>
+                            <div class="wc-state-name" id="wc-state-name">—</div>
+                            <div class="wc-city-name" id="wc-city-name">—</div>
+                        </div>
+                        <div class="wc-weather-icon" id="wc-icon">🌤️</div>
                     </div>
-                    <div class="details-row">
-                        <span class="details-label">Predominant Soil Quality</span>
-                        <span class="details-value" id="card-soil">Alluvial, Black Regur, Red Loamy, Laterite Soils</span>
+
+                    <!-- Temperature -->
+                    <div class="wc-temp-block">
+                        <span class="wc-temp" id="wc-temp">—</span>
+                        <span class="wc-temp-unit">°C</span>
+                        <span class="wc-feels" id="wc-feels">Feels like —°C</span>
                     </div>
-                    <div class="details-row">
-                        <span class="details-label">Common Plant Pathogens / Diseases</span>
-                        <span class="details-value" id="card-diseases">Tomato Early Blight, Potato Late Blight, Apple Scab, Grape Powdery Mildew</span>
-                    </div>
-                    <div class="details-row">
-                        <span class="details-label">Crop Health Index</span>
-                        <div class="health-index-wrapper">
-                            <span class="health-index-value" id="card-health-val">87%</span>
-                            <div class="health-bar-container">
-                                <div class="health-bar-fill" id="card-health-fill" style="width: 87%;"></div>
-                            </div>
+
+                    <!-- Condition Description -->
+                    <div class="wc-condition" id="wc-condition">—</div>
+
+                    <!-- Weather Stats Grid -->
+                    <div class="wc-stats-grid">
+                        <div class="wc-stat-card">
+                            <span class="wc-stat-icon">💧</span>
+                            <span class="wc-stat-label">Humidity</span>
+                            <span class="wc-stat-value" id="wc-humidity">—</span>
+                        </div>
+                        <div class="wc-stat-card">
+                            <span class="wc-stat-icon">🌬️</span>
+                            <span class="wc-stat-label">Wind</span>
+                            <span class="wc-stat-value" id="wc-wind">—</span>
+                        </div>
+                        <div class="wc-stat-card">
+                            <span class="wc-stat-icon">👁️</span>
+                            <span class="wc-stat-label">Visibility</span>
+                            <span class="wc-stat-value" id="wc-visibility">—</span>
+                        </div>
+                        <div class="wc-stat-card">
+                            <span class="wc-stat-icon">🌡️</span>
+                            <span class="wc-stat-label">Pressure</span>
+                            <span class="wc-stat-value" id="wc-pressure">—</span>
                         </div>
                     </div>
-                </div>
-                <!-- Scrollable Plant List Container (visible only for Gujarat zoom) -->
-                <div class="plant-list-container" style="display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; max-height: 480px; padding-right: 0.5rem; margin-top: 1rem;">
-                    <!-- Plant item cards will be dynamically populated here -->
+
+                    <!-- Sunrise / Sunset -->
+                    <div class="wc-sun-row">
+                        <div class="wc-sun-item">
+                            <span>🌅 Sunrise</span>
+                            <strong id="wc-sunrise">—</strong>
+                        </div>
+                        <div class="wc-divider"></div>
+                        <div class="wc-sun-item">
+                            <span>🌇 Sunset</span>
+                            <strong id="wc-sunset">—</strong>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner (shown while fetching) -->
+                    <div class="wc-loading" id="wc-loading" style="display:none;">
+                        <div class="wc-spinner"></div>
+                        <span>Fetching weather…</span>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div class="wc-error" id="wc-error" style="display:none;">
+                        ⚠️ Could not load weather data. Please try again.
+                    </div>
                 </div>
             </div>
         </div>
@@ -723,1016 +1043,354 @@
 
     <div class="map-tooltip" id="tooltip"></div>
 
-    <footer
-        style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;">
-        <p>© 2026 PlantCare AI. Engineered for Agricultural Excellence.</p>
+    <footer style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;">
+        <p>© 2026 AgriVision </p>
     </footer>
 
-    <script src="{{ url_for('static', filename='leaves.js') }}"></script>
-    
+    <!-- Disabled leaves animation for the Weather Map page -->
+    <!-- <script src="{{ url_for('static', filename='leaves.js') }}"></script> -->
+
+    <style>
+        /* ═══ WEATHER CARD STYLES ═══ */
+        .weather-card {
+            background: var(--bg-surface);
+            border-radius: 32px;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+
+        .weather-instructions-overlay {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(15,23,42,0.6);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 0.6rem 1.2rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        /* Default / idle state */
+        .weather-default {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .weather-globe-icon { font-size: 5rem; margin-bottom: 1.5rem; }
+        .weather-card-title {
+            font-size: 2.2rem;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .weather-card-subtitle { color: var(--text-light); font-size: 1.05rem; line-height: 1.7; }
+
+        /* Live weather state */
+        .weather-live { animation: fadeIn 0.5s ease; }
+
+        .wc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 2rem;
+        }
+        .wc-state-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .wc-city-name {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-top: 0.3rem;
+            letter-spacing: 1px;
+        }
+        .wc-weather-icon { font-size: 4rem; line-height: 1; }
+
+        .wc-temp-block {
+            display: flex;
+            align-items: flex-end;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+        .wc-temp {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(16,185,129,0.4);
+            line-height: 1;
+        }
+        .wc-temp-unit { font-size: 2rem; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem; }
+        .wc-feels { font-size: 0.95rem; color: var(--text-light); margin-left: 0.5rem; margin-bottom: 0.6rem; }
+
+        .wc-condition {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.7);
+            text-transform: capitalize;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .wc-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .wc-stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            transition: all 0.3s ease;
+        }
+        .wc-stat-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--primary);
+        }
+        .wc-stat-icon { font-size: 1.4rem; }
+        .wc-stat-label { font-size: 0.78rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 1.5px; }
+        .wc-stat-value { font-size: 1.15rem; color: #fff; font-weight: 600; }
+
+        .wc-sun-row {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.2rem 1.5rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+        }
+        .wc-sun-item { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.9rem; color: var(--text-light); }
+        .wc-sun-item strong { color: #fff; font-size: 1.05rem; }
+        .wc-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+
+        /* Spinner */
+        .wc-loading { display: flex; align-items: center; gap: 1rem; color: var(--text-light); font-size: 1rem; margin-top: 1rem; }
+        .wc-spinner {
+            width: 22px; height: 22px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .wc-error { color: #f87171; font-size: 1rem; margin-top: 1rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Fix map-container to use same grid as before */
+        .map-container { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem; }
+        @media (max-width: 1024px) { .map-container { grid-template-columns: 1fr; gap: 3rem; } }
+    </style>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const stateData = {
-                "Andhra Pradesh": { crops: "Rice, Cotton, Chillies, Tobacco, Groundnut", disease: "Pepper Leaf Spot, Tomato Early Blight", soil: "Red Sandy & Clayey Black Soil", health: 86 },
-                "Arunachal Pradesh": { crops: "Rice, Maize, Millet, Ginger, Fruits", disease: "Corn Common Rust, Potato Early Blight", soil: "Acidic Loamy & Forest Soil", health: 89 },
-                "Assam": { crops: "Tea, Rice, Jute, Mustard, Citrus Fruits", disease: "Tomato Late Blight, Corn Leaf Spot", soil: "Fertile Alluvial & Acidic Clayey", health: 88 },
-                "Bihar": { crops: "Rice, Wheat, Sugarcane, Maize, Lentils, Mango", disease: "Potato Late Blight, Tomato Early Blight", soil: "Rich Indo-Gangetic Alluvial", health: 83 },
-                "Chhattisgarh": { crops: "Rice (Paddy), Maize, Soybeans, Groundnut, Pulses", disease: "Tomato Leaf Spot, Corn Common Rust", soil: "Red Sandy Loam & Yellow Clayey", health: 85 },
-                "Goa": { crops: "Cashew, Coconut, Rice, Arecanut, Mangoes", disease: "Pepper Leaf Spot, Tomato Early Blight", soil: "Highly Leached Laterite Soil", health: 91 },
-                "Gujarat": { crops: "Cotton, Groundnut, Castor, Wheat, Mustard, Cumin", disease: "Tomato Early Blight, Corn Leaf Spot", soil: "Deep Black Regur & Alluvial Soil", health: 92 },
-                "Haryana": { crops: "Wheat, Rice, Mustard, Sugarcane, Cotton, Bajra", disease: "Corn Southern Rust, Potato Early Blight", soil: "Sandy Loam & Calcareous Alluvial", health: 93 },
-                "Himachal Pradesh": { crops: "Apples, Maize, Wheat, Barley, Off-season Vegetables", disease: "Apple Scab, Potato Late Blight", soil: "Mountain Forest & Podzolic Soil", health: 90 },
-                "Jammu and Kashmir": { crops: "Saffron, Apples, Rice, Maize, Barley, Walnuts", disease: "Apple Scab, Apple Black Rot, Mildew", soil: "Karewa Lacustrine & Sub-Montane", health: 89 },
-                "Jharkhand": { crops: "Rice, Maize, Pulses, Mustard, Vegetables", disease: "Tomato Late Blight, Potato Early Blight", soil: "Red Sandy & Lateritic Gravelly Soil", health: 82 },
-                "Karnataka": { crops: "Rice, Ragi, Sugarcane, Coffee, Coconut, Cardamom", disease: "Tomato Early Blight, Grape Powdery Mildew", soil: "Red Loamy & Black Clayey Soils", health: 87 },
-                "Kerala": { crops: "Rubber, Coconut, Black Pepper, Cardamom, Rice, Coffee", disease: "Pepper Leaf Spot, Tomato Early Blight", soil: "Leached Laterite & Coastal Alluvial", health: 92 },
-                "Madhya Pradesh": { crops: "Soybean, Wheat, Gram, Cotton, Mustard, Garlic", disease: "Potato Late Blight, Tomato Early Blight", soil: "Mixed Red & Shallow-to-Deep Black Regur", health: 89 },
-                "Maharashtra": { crops: "Sugarcane, Soybean, Cotton, Jowar, Grapes, Onions", disease: "Grape Powdery Mildew, Tomato Late Blight", soil: "Deccan Trap Black Basaltic Regur", health: 88 },
-                "Manipur": { crops: "Rice, Maize, Pulses, Potato, Pineapple", disease: "Potato Early Blight, Corn Leaf Spot", soil: "Red Ferruginous Clayey Loam", health: 86 },
-                "Meghalaya": { crops: "Rice, Maize, Potato, Ginger, Turmeric, Pineapple", disease: "Potato Late Blight, Tomato Early Blight", soil: "Lateritic & Red Sandy Loam", health: 87 },
-                "Mizoram": { crops: "Rice, Maize, Mustard, Sugarcane, Ginger, Anthurium", disease: "Corn Southern Rust, Tomato Leaf Spot", soil: "Acidic Clayey & Sandy Loam", health: 88 },
-                "Nagaland": { crops: "Rice, Maize, Millet, Cardamom, Tea, Cabbage", disease: "Corn Common Rust, Potato Early Blight", soil: "Forest Loam & Sandy Clayey", health: 86 },
-                "Odisha": { crops: "Rice, Jute, Sugarcane, Coconut, Turmeric, Cashew", disease: "Tomato Late Blight, Corn Common Rust", soil: "Red Sandy & Lateritic Alluvial", health: 84 },
-                "Punjab": { crops: "Wheat, Rice, Cotton, Sugarcane, Maize, Potatoes", disease: "Corn Southern Rust, Potato Late Blight", soil: "Deep Rich Alluvial Soil", health: 94 },
-                "Rajasthan": { crops: "Bajra, Mustard, Barley, Guar, Wheat, Coriander", disease: "Maize Rust, Potato Early Blight", soil: "Sandy Desert & Alkaline Soils", health: 81 },
-                "Sikkim": { crops: "Large Cardamom, Ginger, Rice, Maize, Mandarin Orange", disease: "Tomato Early Blight, Corn Leaf Spot", soil: "Hilly Forest Loam & Organic Rich", health: 93 },
-                "Tamil Nadu": { crops: "Rice, Sugarcane, Coconut, Groundnut, Cotton, Bananas", disease: "Tomato Late Blight, Pepper Leaf Spot", soil: "Red Loamy & Black Cotton Clay", health: 86 },
-                "Telangana": { crops: "Rice, Cotton, Maize, Chillies, Turmeric", disease: "Pepper Leaf Spot, Tomato Early Blight", soil: "Red Sandy Dubba & Black Soils", health: 87 },
-                "Tripura": { crops: "Rice, Jackfruit, Pineapple, Rubber, Tea, Bamboo", disease: "Tomato Early Blight, Potato Early Blight", soil: "Red Sandy Loam & Alluvial Valley", health: 88 },
-                "Uttar Pradesh": { crops: "Sugarcane, Wheat, Rice, Potatoes, Mustard, Mangoes", disease: "Potato Late Blight, Corn Common Rust", soil: "Deep Fertile Alluvial Soil", health: 86 },
-                "Uttarakhand": { crops: "Rice, Wheat, Barley, Soybeans, Apples, Amaranth", disease: "Apple Scab, Potato Late Blight", soil: "Mountain Loam & Forest Soil", health: 90 },
-                "West Bengal": { crops: "Rice, Jute, Tea, Potatoes, Sugarcane, Mustard", disease: "Tomato Late Blight, Potato Late Blight", soil: "Deltaic Alluvial & Red Clayey", health: 85 }
+            const paths    = document.querySelectorAll(".state-path");
+            const tooltip  = document.getElementById("tooltip");
+
+            /* ═══════════════════════════════════════════
+               STATE → CAPITAL CITY  mapping
+               Add one state per session as instructed.
+               STATE 1: Maharashtra → Mumbai  ✅
+            ══════════════════════════════════════════════ */
+            const stateCapital = {
+                /* ── STATES ── */
+                "Andhra Pradesh":              "Amaravati",
+                "Arunachal Pradesh":           "Itanagar",
+                "Assam":                       "Guwahati",
+                "Bihar":                       "Patna",
+                "Chhattisgarh":                "Raipur",
+                "Goa":                         "Panaji",
+                "Gujarat":                     "Gandhinagar",
+                "Haryana":                     "Chandigarh",
+                "Himachal Pradesh":            "Shimla",
+                "Jammu and Kashmir":           "Srinagar",
+                "Jharkhand":                   "Ranchi",
+                "Karnataka":                   "Bengaluru",
+                "Kerala":                      "Thiruvananthapuram",
+                "Madhya Pradesh":              "Bhopal",
+                "Maharashtra":                 "Mumbai",
+                "Manipur":                     "Imphal",
+                "Meghalaya":                   "Shillong",
+                "Mizoram":                     "Aizawl",
+                "Nagaland":                    "Kohima",
+                "Odisha":                      "Bhubaneswar",
+                "Punjab":                      "Chandigarh",
+                "Rajasthan":                   "Jaipur",
+                "Sikkim":                      "Gangtok",
+                "Tamil Nadu":                  "Chennai",
+                "Telangana":                   "Hyderabad",
+                "Tripura":                     "Agartala",
+                "Uttar Pradesh":               "Lucknow",
+                "Uttarakhand":                 "Dehradun",
+                "West Bengal":                 "Kolkata",
+
+                /* ── UNION TERRITORIES ── */
+                "Andaman and Nicobar Islands": "Port Blair",
+                "Chandigarh":                  "Chandigarh",
+                "Dadra and Nagar Haveli":      "Silvassa",
+                "Daman and Diu":               "Daman",
+                "Delhi":                       "New Delhi",
+                "Lakshadweep":                 "Kavaratti",
+                "Puducherry":                  "Puducherry"
             };
 
-            // Default State values (National)
-            const defaultState = {
-                name: "<span class='state-icon'></span> India ",
-                crops: "Rice, Wheat, Cotton, Sugarcane, Tea, Spices, Millets",
-                soil: "Alluvial, Black Regur, Red Loamy, Laterite Soils",
-                disease: "Tomato Early Blight, Potato Late Blight, Apple Scab, Grape Powdery Mildew",
-                health: 87
-            };
-
-            function getFallbackData(stateName) {
-                let hash = 0;
-                for (let i = 0; i < stateName.length; i++) {
-                    hash = stateName.charCodeAt(i) + ((hash << 5) - hash);
-                }
-                const health = 80 + Math.abs(hash % 16);
-                const cropList = ["Rice, Vegetables, Fruits", "Maize, Wheat, Pulses", "Millets, Groundnut, Oilseeds", "Coconut, Spices, Plantation Crops"];
-                const crops = cropList[Math.abs(hash % cropList.length)];
-                
-                const diseaseList = ["Tomato Early Blight", "Potato Late Blight", "Corn Southern Rust", "Pepper Leaf Spot"];
-                const disease = diseaseList[Math.abs(hash % diseaseList.length)];
-                
-                const soilList = ["Alluvial & Clayey loam", "Sandy Loam & Red Soil", "Laterite & Gravelly mountain soil", "Coastal Sandy Soil"];
-                const soil = soilList[Math.abs(hash % soilList.length)];
-                
-                return { crops, disease, soil, health };
+            /* Weather icon mapping based on wttr.in weather codes */
+            function getWeatherIcon(code) {
+                if (code === 113) return "☀️";
+                if ([116, 119, 122].includes(code)) return "🌤️";
+                if ([143, 248, 260].includes(code)) return "🌫️";
+                if ([176, 263, 266, 293, 296, 299, 302, 305, 308, 311, 314, 317, 320].includes(code)) return "🌧️";
+                if ([200, 386, 389].includes(code)) return "⛈️";
+                if ([179, 182, 185, 323, 326, 329, 332, 335, 338, 350, 353, 356, 359, 362, 365, 368, 371, 374, 377, 392, 395].includes(code)) return "🌨️";
+                return "🌤️";
             }
 
-            const paths = document.querySelectorAll("path.state-path");
-            const tooltip = document.getElementById("tooltip");
-            const cardStateName = document.getElementById("card-state-name");
-            const cardCrops = document.getElementById("card-crops");
-            const cardSoil = document.getElementById("card-soil");
-            const cardDiseases = document.getElementById("card-diseases");
-            const cardHealthVal = document.getElementById("card-health-val");
-            const cardHealthFill = document.getElementById("card-health-fill");
-            const mapGroup = document.getElementById("map-group");
-            const svg = document.querySelector("svg.india-map");
-
-            const allStatesCrops = {
-                "Andhra Pradesh": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Cotton" },
-                    { rank: 3, name: "Chillies" },
-                    { rank: 4, name: "Tobacco" },
-                    { rank: 5, name: "Groundnut" },
-                    { rank: 6, name: "Sugarcane" },
-                    { rank: 7, name: "Mango" },
-                    { rank: 8, name: "Turmeric" },
-                    { rank: 9, name: "Maize" },
-                    { rank: 10, name: "Sweet Orange" }
-                ],
-                "Arunachal Pradesh": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Millet" },
-                    { rank: 4, name: "Ginger" },
-                    { rank: 5, name: "Potatoes" },
-                    { rank: 6, name: "Wheat" },
-                    { rank: 7, name: "Mustard" },
-                    { rank: 8, name: "Citrus Fruits" },
-                    { rank: 9, name: "Pineapple" },
-                    { rank: 10, name: "Apples" }
-                ],
-                "Assam": [
-                    { rank: 1, name: "Tea" },
-                    { rank: 2, name: "Rice" },
-                    { rank: 3, name: "Jute" },
-                    { rank: 4, name: "Mustard" },
-                    { rank: 5, name: "Citrus Fruits" },
-                    { rank: 6, name: "Sugarcane" },
-                    { rank: 7, name: "Potatoes" },
-                    { rank: 8, name: "Maize" },
-                    { rank: 9, name: "Coconut" },
-                    { rank: 10, name: "Arecanut" }
-                ],
-                "Bihar": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Wheat" },
-                    { rank: 3, name: "Sugarcane" },
-                    { rank: 4, name: "Maize" },
-                    { rank: 5, name: "Lentils" },
-                    { rank: 6, name: "Mango" },
-                    { rank: 7, name: "Potatoes" },
-                    { rank: 8, name: "Mustard" },
-                    { rank: 9, name: "Banana" },
-                    { rank: 10, name: "Jute" }
-                ],
-                "Chhattisgarh": [
-                    { rank: 1, name: "Rice (Paddy)" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Soybeans" },
-                    { rank: 4, name: "Groundnut" },
-                    { rank: 5, name: "Pulses" },
-                    { rank: 6, name: "Sugarcane" },
-                    { rank: 7, name: "Mustard" },
-                    { rank: 8, name: "Wheat" },
-                    { rank: 9, name: "Cotton" },
-                    { rank: 10, name: "Vegetables" }
-                ],
-                "Goa": [
-                    { rank: 1, name: "Cashew" },
-                    { rank: 2, name: "Coconut" },
-                    { rank: 3, name: "Rice" },
-                    { rank: 4, name: "Arecanut" },
-                    { rank: 5, name: "Mangoes" },
-                    { rank: 6, name: "Bananas" },
-                    { rank: 7, name: "Kokum" },
-                    { rank: 8, name: "Ragi" },
-                    { rank: 9, name: "Black Pepper" },
-                    { rank: 10, name: "Jackfruit" }
-                ],
-                "Gujarat": [
-                    { rank: 1, name: "Cotton" },
-                    { rank: 2, name: "Groundnut" },
-                    { rank: 3, name: "Wheat" },
-                    { rank: 4, name: "Rice" },
-                    { rank: 5, name: "Castor Seed" },
-                    { rank: 6, name: "Bajra (Pearl Millet)" },
-                    { rank: 7, name: "Maize (Corn)" },
-                    { rank: 8, name: "Mustard" },
-                    { rank: 9, name: "Cumin (Jeera)" },
-                    { rank: 10, name: "Sugarcane" }
-                ],
-                "Haryana": [
-                    { rank: 1, name: "Wheat" },
-                    { rank: 2, name: "Rice" },
-                    { rank: 3, name: "Mustard" },
-                    { rank: 4, name: "Sugarcane" },
-                    { rank: 5, name: "Cotton" },
-                    { rank: 6, name: "Bajra" },
-                    { rank: 7, name: "Maize" },
-                    { rank: 8, name: "Barley" },
-                    { rank: 9, name: "Gram" },
-                    { rank: 10, name: "Sunflower" }
-                ],
-                "Himachal Pradesh": [
-                    { rank: 1, name: "Apples" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Wheat" },
-                    { rank: 4, name: "Barley" },
-                    { rank: 5, name: "Potatoes" },
-                    { rank: 6, name: "Off-season Vegetables" },
-                    { rank: 7, name: "Cherries" },
-                    { rank: 8, name: "Peaches" },
-                    { rank: 9, name: "Plums" },
-                    { rank: 10, name: "Ginger" }
-                ],
-                "Jammu and Kashmir": [
-                    { rank: 1, name: "Saffron" },
-                    { rank: 2, name: "Apples" },
-                    { rank: 3, name: "Rice" },
-                    { rank: 4, name: "Maize" },
-                    { rank: 5, name: "Barley" },
-                    { rank: 6, name: "Walnuts" },
-                    { rank: 7, name: "Almonds" },
-                    { rank: 8, name: "Cherries" },
-                    { rank: 9, name: "Pears" },
-                    { rank: 10, name: "Wheat" }
-                ],
-                "Jharkhand": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Pulses" },
-                    { rank: 4, name: "Mustard" },
-                    { rank: 5, name: "Vegetables" },
-                    { rank: 6, name: "Wheat" },
-                    { rank: 7, name: "Sugarcane" },
-                    { rank: 8, name: "Groundnut" },
-                    { rank: 9, name: "Ragi" },
-                    { rank: 10, name: "Barley" }
-                ],
-                "Karnataka": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Ragi" },
-                    { rank: 3, name: "Sugarcane" },
-                    { rank: 4, name: "Coffee" },
-                    { rank: 5, name: "Coconut" },
-                    { rank: 6, name: "Cardamom" },
-                    { rank: 7, name: "Cotton" },
-                    { rank: 8, name: "Maize" },
-                    { rank: 9, name: "Tobacco" },
-                    { rank: 10, name: "Groundnut" }
-                ],
-                "Kerala": [
-                    { rank: 1, name: "Rubber" },
-                    { rank: 2, name: "Coconut" },
-                    { rank: 3, name: "Black Pepper" },
-                    { rank: 4, name: "Cardamom" },
-                    { rank: 5, name: "Rice" },
-                    { rank: 6, name: "Coffee" },
-                    { rank: 7, name: "Tea" },
-                    { rank: 8, name: "Cashew" },
-                    { rank: 9, name: "Tapioca" },
-                    { rank: 10, name: "Ginger" }
-                ],
-                "Madhya Pradesh": [
-                    { rank: 1, name: "Soybean" },
-                    { rank: 2, name: "Wheat" },
-                    { rank: 3, name: "Gram" },
-                    { rank: 4, name: "Cotton" },
-                    { rank: 5, name: "Mustard" },
-                    { rank: 6, name: "Garlic" },
-                    { rank: 7, name: "Maize" },
-                    { rank: 8, name: "Jowar" },
-                    { rank: 9, name: "Arhar (Pigeon Pea)" },
-                    { rank: 10, name: "Coriander" }
-                ],
-                "Maharashtra": [
-                    { rank: 1, name: "Sugarcane" },
-                    { rank: 2, name: "Soybean" },
-                    { rank: 3, name: "Cotton" },
-                    { rank: 4, name: "Jowar" },
-                    { rank: 5, name: "Grapes" },
-                    { rank: 6, name: "Onions" },
-                    { rank: 7, name: "Bajra" },
-                    { rank: 8, name: "Wheat" },
-                    { rank: 9, name: "Mangoes" },
-                    { rank: 10, name: "Bananas" }
-                ],
-                "Manipur": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Pulses" },
-                    { rank: 4, name: "Potato" },
-                    { rank: 5, name: "Pineapple" },
-                    { rank: 6, name: "Ginger" },
-                    { rank: 7, name: "Turmeric" },
-                    { rank: 8, name: "Cabbage" },
-                    { rank: 9, name: "Orange" },
-                    { rank: 10, name: "Banana" }
-                ],
-                "Meghalaya": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Potato" },
-                    { rank: 4, name: "Ginger" },
-                    { rank: 5, name: "Turmeric" },
-                    { rank: 6, name: "Pineapple" },
-                    { rank: 7, name: "Bananas" },
-                    { rank: 8, name: "Citrus Fruits" },
-                    { rank: 9, name: "Black Pepper" },
-                    { rank: 10, name: "Mustard" }
-                ],
-                "Mizoram": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Mustard" },
-                    { rank: 4, name: "Sugarcane" },
-                    { rank: 5, name: "Ginger" },
-                    { rank: 6, name: "Anthurium" },
-                    { rank: 7, name: "Orange" },
-                    { rank: 8, name: "Banana" },
-                    { rank: 9, name: "Pineapple" },
-                    { rank: 10, name: "Potatoes" }
-                ],
-                "Nagaland": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Millet" },
-                    { rank: 4, name: "Cardamom" },
-                    { rank: 5, name: "Tea" },
-                    { rank: 6, name: "Cabbage" },
-                    { rank: 7, name: "Potatoes" },
-                    { rank: 8, name: "Ginger" },
-                    { rank: 9, name: "Orange" },
-                    { rank: 10, name: "Pineapple" }
-                ],
-                "Odisha": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Jute" },
-                    { rank: 3, name: "Sugarcane" },
-                    { rank: 4, name: "Coconut" },
-                    { rank: 5, name: "Turmeric" },
-                    { rank: 6, name: "Cashew" },
-                    { rank: 7, name: "Groundnut" },
-                    { rank: 8, name: "Mustard" },
-                    { rank: 9, name: "Pulses" },
-                    { rank: 10, name: "Mango" }
-                ],
-                "Punjab": [
-                    { rank: 1, name: "Wheat" },
-                    { rank: 2, name: "Rice" },
-                    { rank: 3, name: "Cotton" },
-                    { rank: 4, name: "Sugarcane" },
-                    { rank: 5, name: "Maize" },
-                    { rank: 6, name: "Potatoes" },
-                    { rank: 7, name: "Mustard" },
-                    { rank: 8, name: "Barley" },
-                    { rank: 9, name: "Sunflower" },
-                    { rank: 10, name: "Peas" }
-                ],
-                "Rajasthan": [
-                    { rank: 1, name: "Bajra" },
-                    { rank: 2, name: "Mustard" },
-                    { rank: 3, name: "Barley" },
-                    { rank: 4, name: "Guar" },
-                    { rank: 5, name: "Wheat" },
-                    { rank: 6, name: "Coriander" },
-                    { rank: 7, name: "Cumin" },
-                    { rank: 8, name: "Gram" },
-                    { rank: 9, name: "Cotton" },
-                    { rank: 10, name: "Groundnut" }
-                ],
-                "Sikkim": [
-                    { rank: 1, name: "Large Cardamom" },
-                    { rank: 2, name: "Ginger" },
-                    { rank: 3, name: "Rice" },
-                    { rank: 4, name: "Maize" },
-                    { rank: 5, name: "Mandarin Orange" },
-                    { rank: 6, name: "Potatoes" },
-                    { rank: 7, name: "Soybeans" },
-                    { rank: 8, name: "Mustard" },
-                    { rank: 9, name: "Wheat" },
-                    { rank: 10, name: "Tea" }
-                ],
-                "Tamil Nadu": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Sugarcane" },
-                    { rank: 3, name: "Coconut" },
-                    { rank: 4, name: "Groundnut" },
-                    { rank: 5, name: "Cotton" },
-                    { rank: 6, name: "Bananas" },
-                    { rank: 7, name: "Tea" },
-                    { rank: 8, name: "Coffee" },
-                    { rank: 9, name: "Turmeric" },
-                    { rank: 10, name: "Mango" }
-                ],
-                "Telangana": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Cotton" },
-                    { rank: 3, name: "Maize" },
-                    { rank: 4, name: "Chillies" },
-                    { rank: 5, name: "Turmeric" },
-                    { rank: 6, name: "Sugarcane" },
-                    { rank: 7, name: "Groundnut" },
-                    { rank: 8, name: "Soybeans" },
-                    { rank: 9, name: "Red Gram" },
-                    { rank: 10, name: "Mango" }
-                ],
-                "Tripura": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Jackfruit" },
-                    { rank: 3, name: "Pineapple" },
-                    { rank: 4, name: "Rubber" },
-                    { rank: 5, name: "Tea" },
-                    { rank: 6, name: "Bamboo" },
-                    { rank: 7, name: "Potatoes" },
-                    { rank: 8, name: "Sugarcane" },
-                    { rank: 9, name: "Mustard" },
-                    { rank: 10, name: "Jute" }
-                ],
-                "Uttar Pradesh": [
-                    { rank: 1, name: "Sugarcane" },
-                    { rank: 2, name: "Wheat" },
-                    { rank: 3, name: "Rice" },
-                    { rank: 4, name: "Potatoes" },
-                    { rank: 5, name: "Mustard" },
-                    { rank: 6, name: "Mangoes" },
-                    { rank: 7, name: "Maize" },
-                    { rank: 8, name: "Barley" },
-                    { rank: 9, name: "Bajra" },
-                    { rank: 10, name: "Gram" }
-                ],
-                "Uttarakhand": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Wheat" },
-                    { rank: 3, name: "Barley" },
-                    { rank: 4, name: "Soybeans" },
-                    { rank: 5, name: "Apples" },
-                    { rank: 6, name: "Amaranth" },
-                    { rank: 7, name: "Potatoes" },
-                    { rank: 8, name: "Mustard" },
-                    { rank: 9, name: "Ginger" },
-                    { rank: 10, name: "Sugarcane" }
-                ],
-                "West Bengal": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Jute" },
-                    { rank: 3, name: "Tea" },
-                    { rank: 4, name: "Potatoes" },
-                    { rank: 5, name: "Sugarcane" },
-                    { rank: 6, name: "Mustard" },
-                    { rank: 7, name: "Wheat" },
-                    { rank: 8, name: "Maize" },
-                    { rank: 9, name: "Mango" },
-                    { rank: 10, name: "Tobacco" }
-                ],
-                "Andaman and Nicobar Islands": [
-                    { rank: 1, name: "Coconut" },
-                    { rank: 2, name: "Rice" },
-                    { rank: 3, name: "Arecanut" },
-                    { rank: 4, name: "Bananas" },
-                    { rank: 5, name: "Sweet Potato" },
-                    { rank: 6, name: "Tapioca" },
-                    { rank: 7, name: "Ginger" },
-                    { rank: 8, name: "Turmeric" },
-                    { rank: 9, name: "Black Pepper" },
-                    { rank: 10, name: "Rubber" }
-                ],
-                "Chandigarh": [
-                    { rank: 1, name: "Wheat" },
-                    { rank: 2, name: "Maize" },
-                    { rank: 3, name: "Rice" },
-                    { rank: 4, name: "Vegetables" },
-                    { rank: 5, name: "Mango" },
-                    { rank: 6, name: "Citrus Fruits" },
-                    { rank: 7, name: "Mustard" },
-                    { rank: 8, name: "Barley" },
-                    { rank: 9, name: "Potato" },
-                    { rank: 10, name: "Fodder" }
-                ],
-                "Dadra and Nagar Haveli": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Ragi" },
-                    { rank: 3, name: "Wheat" },
-                    { rank: 4, name: "Mango" },
-                    { rank: 5, name: "Vegetables" },
-                    { rank: 6, name: "Pulses" },
-                    { rank: 7, name: "Sugarcane" },
-                    { rank: 8, name: "Chikoo" },
-                    { rank: 9, name: "Guava" },
-                    { rank: 10, name: "Coconut" }
-                ],
-                "Daman and Diu": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Ragi" },
-                    { rank: 3, name: "Bajra" },
-                    { rank: 4, name: "Wheat" },
-                    { rank: 5, name: "Coconut" },
-                    { rank: 6, name: "Chikoo" },
-                    { rank: 7, name: "Mango" },
-                    { rank: 8, name: "Bananas" },
-                    { rank: 9, name: "Vegetables" },
-                    { rank: 10, name: "Pulses" }
-                ],
-                "Delhi": [
-                    { rank: 1, name: "Wheat" },
-                    { rank: 2, name: "Rice" },
-                    { rank: 3, name: "Mustard" },
-                    { rank: 4, name: "Vegetables" },
-                    { rank: 5, name: "Millets" },
-                    { rank: 6, name: "Sugarcane" },
-                    { rank: 7, name: "Barley" },
-                    { rank: 8, name: "Potatoes" },
-                    { rank: 9, name: "Onions" },
-                    { rank: 10, name: "Fodder" }
-                ],
-                "Lakshadweep": [
-                    { rank: 1, name: "Coconut" },
-                    { rank: 2, name: "Bananas" },
-                    { rank: 3, name: "Papaya" },
-                    { rank: 4, name: "Drumstick" },
-                    { rank: 5, name: "Sweet Potato" },
-                    { rank: 6, name: "Tapioca" },
-                    { rank: 7, name: "Breadfruit" },
-                    { rank: 8, name: "Arecanut" },
-                    { rank: 9, name: "Chillies" },
-                    { rank: 10, name: "Vegetables" }
-                ],
-                "Puducherry": [
-                    { rank: 1, name: "Rice" },
-                    { rank: 2, name: "Sugarcane" },
-                    { rank: 3, name: "Coconut" },
-                    { rank: 4, name: "Cotton" },
-                    { rank: 5, name: "Ragi" },
-                    { rank: 6, name: "Groundnut" },
-                    { rank: 7, name: "Bananas" },
-                    { rank: 8, name: "Vegetables" },
-                    { rank: 9, name: "Mango" },
-                    { rank: 10, name: "Chillies" }
-                ]
-            };
-
-            function getCropImages(cropName, isGujarat) {
-                const localCropFiles = {
-                    "Rice": "rice.png",
-                    "Rice (Paddy)": "rice.png",
-                    "Cotton": "cotton.png",
-                    "Chillies": "Chillies.webp",
-                    "Tobacco": "Tobacco.webp",
-                    "Groundnut": "ground nuts.png",
-                    "Sugarcane": "Sugarcane.png",
-                    "Mango": "Mango.webp",
-                    "Mangoes": "Mango.webp",
-                    "Turmeric": "Turmeric.webp",
-                    "Maize": "Maize.webp",
-                    "Maize (Corn)": "Maize (Corn).png",
-                    "Sweet Orange": "Sweet Orange.webp",
-                    "Millet": "Millet.webp",
-                    "Millets": "Millet.webp",
-                    "Ginger": "Ginger.webp",
-                    "Potato": "Potato.webp",
-                    "Potatoes": "Potato.webp",
-                    "Wheat": "wheat.png",
-                    "Mustard": "Mustard.png",
-                    "Citrus Fruits": "Citrus Fruits.webp",
-                    "Pineapple": "Pineapple.png",
-                    "Pineapples": "Pineapple.png",
-                    "Apples": "Apples.webp",
-                    "Apple": "Apples.webp",
-                    "Apricot": "Apricot.png",
-                    "Tea": "tea.webp",
-                    "Jute": "Jute.webp",
-                    "Coconut": "coconut.webp",
-                    "Coconut Oil": "Coconut Oil.png",
-                    "Coir": "Coir.png",
-                    "Coir Products": "Coir.png",
-                    "Copra": "Copra.png",
-                    "Arecanut": "Arecanut.webp",
-                    "Lentils": "Lentils.webp",
-                    "Banana": "Banana.webp",
-                    "Bananas": "Banana.webp",
-                    "Kiwi": "Kiwi.png",
-                    "Lac": "Lac.png",
-                    "Isabgol": "Isabgol.png",
-                    "Isabgol (Psyllium)": "Isabgol.png",
-                    "Soybeans": "Soybeans.webp",
-                    "Soybean": "Soybean.webp",
-                    "Pulses": "Pulses.webp",
-                    "Vegetables": "Off-season Vegetables.webp",
-                    "Off-season Vegetables": "Off-season Vegetables.webp",
-                    "Cashew": "Cashew.webp",
-                    "Coffee": "Coffee.png",
-                    "Kokum": "Kokum.webp",
-                    "Ragi": "Ragi.png",
-                    "Black Pepper": "Black Pepper.webp",
-                    "Jackfruit": "jackfruit.webp",
-                    "Castor Seed": "Castor Seed.png",
-                    "Bajra (Pearl Millet)": "Bajra (Pearl Millet).png",
-                    "Bajra": "Bajra (Pearl Millet).png",
-                    "Cumin (Jeera)": "Cumin (Jeera).png",
-                    "Cumin": "Cumin (Jeera).png",
-                    "Barley": "Barley.webp",
-                    "Gram": "Gram.webp",
-                    "Sunflower": "Sunflower.webp",
-                    "Cherries": "Cherries.webp",
-                    "Peaches": "Peaches.webp",
-                    "Plums": "Plums.webp",
-                    "Saffron": "Saffron.webp",
-                    "Walnuts": "Walnuts.webp",
-                    "Almonds": "almond.png",
-                    "Pears": "pears.webp",
-                    "Cardamom": "cardamom.webp",
-                    "Large Cardamom": "Large Cardamom.webp",
-                    "Rubber": "Rubber.webp",
-                    "Tapioca": "Tapioca.webp",
-                    "Garlic": "Garlic..webp",
-                    "Jowar": "Jowar.webp",
-                    "Arhar (Pigeon Pea)": "Arhar (Pigeon Pea).webp",
-                    "Coriander": "Coriander.webp",
-                    "Grapes": "Grapes.webp",
-                    "Onions": "Onions.jpg",
-                    "Cabbage": "Cabbage.webp",
-                    "Orange": "Mandarin Orange.webp",
-                    "Mandarin Orange": "Mandarin Orange.webp",
-                    "Peas": "Peas.webp",
-                    "Guar": "Guar.webp",
-                    "Red Gram": "Red Gram.webp",
-                    "Bamboo": "Bamboo.webp",
-                    "Sweet Potato": "Sweet Potato.webp",
-                    "Fodder": "Fodder.webp",
-                    "Chikoo": "Chikoo.webp",
-                    "Guava": "Guava.webp",
-                    "Papaya": "Papaya.webp",
-                    "Drumstick": "Drumstick.webp",
-                    "Breadfruit": "Breadfruit.webp",
-                    "Amaranth": "Amaranth.webp",
-                    "Anthurium": "Anthurium.webp",
-                    "Honey": "Honey.png",
-                    "Mushroom": "Mushroom.png",
-                    "Mushrooms": "Mushroom.png",
-                    "Fresh Herbs": "Medical Herbs.png",
-                    "Medicinal Herbs": "Medicinal Herbs.png",
-                    "Medical Herbs": "Medical Herbs.png",
-                    "Makhana": "Makhana.png",
-                    "Litchi": "Litchi.png",
-                    "Dragon Fruit": "Dragon Fruit.png",
-                    "Passion Fruit": "Passion Fruit.png",
-                    "Tomato": "Tomato.png",
-                    "Tamarind": "Tamarind.png",
-                    "Pomegranate": "Pomegranate.png",
-                    "Sesame": "Sesame.png",
-                    "Sesame Seeds": "Sesame.png",
-                    "Clove": "Clove.png",
-                    "Cloves": "Clove.png",
-                    "Nutmeg": "Nutmeg.png"
-                };
-
-                const filename = localCropFiles[cropName];
-                if (filename) {
-                    const localUrl = `/static/images/${filename}`;
-                    return { thumb: localUrl, large: localUrl };
-                }
-
-                // Fallback to Unsplash
-                const unsplashUrls = {
-                    "Cotton": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&auto=format&fit=crop&q=80",
-                    "Groundnut": "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=600&auto=format&fit=crop&q=80",
-                    "Wheat": "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=600&auto=format&fit=crop&q=80",
-                    "Rice": "https://images.unsplash.com/photo-1536657464919-8925412f7b6e?w=600&auto=format&fit=crop&q=80",
-                    "Rice (Paddy)": "https://images.unsplash.com/photo-1536657464919-8925412f7b6e?w=600&auto=format&fit=crop&q=80",
-                    "Castor Seed": "https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=600&auto=format&fit=crop&q=80",
-                    "Bajra (Pearl Millet)": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=600&auto=format&fit=crop&q=80",
-                    "Bajra": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=600&auto=format&fit=crop&q=80",
-                    "Maize (Corn)": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=80",
-                    "Maize": "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=80",
-                    "Mustard": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format&fit=crop&q=80",
-                    "Cumin (Jeera)": "https://images.unsplash.com/photo-1588615419957-c81b9b13998f?w=600&auto=format&fit=crop&q=80",
-                    "Cumin": "https://images.unsplash.com/photo-1588615419957-c81b9b13998f?w=600&auto=format&fit=crop&q=80",
-                    "Sugarcane": "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&auto=format&fit=crop&q=80",
-                    "Tea": "https://images.unsplash.com/photo-1554631221-f9603378232a?w=600&auto=format&fit=crop&q=80",
-                    "Coffee": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&auto=format&fit=crop&q=80",
-                    "Rubber": "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=600&auto=format&fit=crop&q=80",
-                    "Coconut": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=600&auto=format&fit=crop&q=80",
-                    "Cashew": "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=600&auto=format&fit=crop&q=80",
-                    "Mango": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=600&auto=format&fit=crop&q=80",
-                    "Mangoes": "https://images.unsplash.com/photo-1553279768-865429fa0078?w=600&auto=format&fit=crop&q=80",
-                    "Apples": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=600&auto=format&fit=crop&q=80",
-                    "Orange": "https://images.unsplash.com/photo-1547514701-42782101795e?w=600&auto=format&fit=crop&q=80",
-                    "Mandarin Orange": "https://images.unsplash.com/photo-1547514701-42782101795e?w=600&auto=format&fit=crop&q=80",
-                    "Pineapple": "https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=600&auto=format&fit=crop&q=80",
-                    "Bananas": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80",
-                    "Potato": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&auto=format&fit=crop&q=80",
-                    "Potatoes": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&auto=format&fit=crop&q=80",
-                    "Onions": "https://images.unsplash.com/photo-1508747703725-719ae2c73ee1?w=600&auto=format&fit=crop&q=80",
-                    "Garlic": "https://images.unsplash.com/photo-1540148426945-6cf22a6b2383?w=600&auto=format&fit=crop&q=80",
-                    "Ginger": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80",
-                    "Turmeric": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&auto=format&fit=crop&q=80",
-                    "Chillies": "https://images.unsplash.com/photo-1588252303782-cb80119cb665?w=600&auto=format&fit=crop&q=80",
-                    "Cardamom": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80",
-                    "Large Cardamom": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80",
-                    "Black Pepper": "https://images.unsplash.com/photo-1509358271058-acd22cc93898?w=600&auto=format&fit=crop&q=80",
-                    "Saffron": "https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=600&auto=format&fit=crop&q=80",
-                    "Soybean": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80",
-                    "Soybeans": "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=600&auto=format&fit=crop&q=80",
-                    "Jute": "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&auto=format&fit=crop&q=80",
-                    "Tobacco": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=600&auto=format&fit=crop&q=80",
-                    "Millets": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=600&auto=format&fit=crop&q=80",
-                    "Millet": "https://images.unsplash.com/photo-1595855759920-86582396756a?w=600&auto=format&fit=crop&q=80",
-                    "Barley": "https://images.unsplash.com/photo-1542856391-010fb87dcfed?w=600&auto=format&fit=crop&q=80",
-                    "Pulses": "https://images.unsplash.com/photo-1568254183919-78a4f43a2877?w=600&auto=format&fit=crop&q=80",
-                    "Grapes": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=600&auto=format&fit=crop&q=80",
-                    "Citrus Fruits": "https://images.unsplash.com/photo-1547514701-42782101795e?w=600&auto=format&fit=crop&q=80",
-                    "Jackfruit": "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=600&auto=format&fit=crop&q=80"
-                };
-
-                const url = unsplashUrls[cropName] || "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&auto=format&fit=crop&q=80";
-                return { thumb: url, large: url };
+            /* Format Unix timestamp to IST time string */
+            function formatTime(unixTs) {
+                const d = new Date(unixTs * 1000);
+                return d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
             }
 
-            let activeClickedState = null;
-
-            function resetZoom() {
-                activeClickedState = null;
-                mapGroup.style.transform = "";
-
-                // Remove dynamic text label overlay
-                const oldLabel = document.getElementById("active-state-label");
-                if (oldLabel) oldLabel.remove();
-
-                // Hide large plant image view
-                document.getElementById("plant-detail-view").style.display = "none";
-
-                // Restore details card visibility and layouts
-                document.querySelector(".details-header").style.opacity = 1;
-                document.querySelector(".details-grid").style.display = "flex";
-                document.querySelector(".plant-list-container").style.display = "none";
-
-                paths.forEach(p => p.classList.remove("active-state"));
-                tooltip.style.display = "none";
-
-                // Return to National defaults
-                setTimeout(() => {
-                    cardStateName.innerHTML = defaultState.name;
-                    cardCrops.innerText = defaultState.crops;
-                    cardSoil.innerText = defaultState.soil;
-                    cardDiseases.innerText = defaultState.disease;
-                    cardHealthVal.innerText = defaultState.health + "%";
-                    cardHealthFill.style.width = defaultState.health + "%";
-                }, 150);
+            /* Show/hide weather panel sections */
+            function showLoading() {
+                document.getElementById("weather-default").style.display = "none";
+                document.getElementById("weather-live").style.display    = "flex";
+                document.getElementById("weather-live").style.flexDirection = "column";
+                document.getElementById("wc-loading").style.display      = "flex";
+                document.getElementById("wc-error").style.display        = "none";
+            }
+            function hideLoading() {
+                document.getElementById("wc-loading").style.display = "none";
+            }
+            function showError() {
+                hideLoading();
+                document.getElementById("wc-error").style.display = "block";
             }
 
-            // Click outside a state (on the SVG background) resets the zoom
-            svg.addEventListener("click", function(e) {
-                if (e.target.tagName !== "path" && activeClickedState) {
-                    resetZoom();
+            /* ─── Fetch live weather via wttr.in (no API key needed) ─── */
+            async function fetchWeather(city, stateName) {
+                showLoading();
+                document.getElementById("wc-state-name").textContent = stateName;
+                document.getElementById("wc-city-name").textContent  = "📍 " + city;
+
+                try {
+                    const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
+                    const res = await fetch(url);
+                    if (!res.ok) throw new Error("Bad response");
+                    const data = await res.json();
+
+                    const current  = data.current_condition[0];
+                    const today    = data.weather[0];
+                    const astro    = today.astronomy[0];
+
+                    const tempC    = current.temp_C;
+                    const feelsC   = current.FeelsLikeC;
+                    const humidity = current.humidity + "%";
+                    const windKmh  = current.windspeedKmph + " km/h";
+                    const visKm    = current.visibility + " km";
+                    const pressMb  = current.pressure + " hPa";
+                    const desc     = current.weatherDesc[0].value;
+                    const code     = parseInt(current.weatherCode);
+                    const icon     = getWeatherIcon(code);
+                    const sunrise  = astro.sunrise;
+                    const sunset   = astro.sunset;
+
+                    /* Inject values */
+                    document.getElementById("wc-temp").textContent       = tempC;
+                    document.getElementById("wc-feels").textContent      = `Feels like ${feelsC}°C`;
+                    document.getElementById("wc-condition").textContent  = desc;
+                    document.getElementById("wc-icon").textContent       = icon;
+                    document.getElementById("wc-humidity").textContent   = humidity;
+                    document.getElementById("wc-wind").textContent       = windKmh;
+                    document.getElementById("wc-visibility").textContent = visKm;
+                    document.getElementById("wc-pressure").textContent   = pressMb;
+                    document.getElementById("wc-sunrise").textContent    = sunrise;
+                    document.getElementById("wc-sunset").textContent     = sunset;
+
+                    hideLoading();
+
+                } catch (err) {
+                    console.error("Weather fetch error:", err);
+                    showError();
                 }
-            });
+            }
 
-            // Black button click event handler (Back to Map)
-            document.getElementById("close-plant-view").addEventListener("click", function(e) {
-                e.stopPropagation();
-                document.getElementById("plant-detail-view").style.display = "none";
-            });
-
+            /* ─── SVG Map Interaction ─── */
             paths.forEach(function(path) {
                 const stateName = path.getAttribute("name");
                 if (!stateName) return;
 
-                path.addEventListener("mouseover", function(e) {
-                    if (activeClickedState) return; // Block hover updates when zoomed in
+                /* Tooltip on hover */
+                path.addEventListener("mousemove", function(e) {
+                    tooltip.textContent      = stateName;
+                    tooltip.style.display   = "block";
+                    tooltip.style.left      = e.clientX + "px";
+                    tooltip.style.top       = e.clientY + "px";
+                });
+                path.addEventListener("mouseleave", function() {
+                    tooltip.style.display = "none";
+                    paths.forEach(p => p.classList.remove("active-state"));
+                });
+                path.addEventListener("mouseenter", function() {
+                    paths.forEach(p => p.classList.remove("active-state"));
+                    path.classList.add("active-state");
+                });
 
-                    // Highlight on map
+                /* Click → fetch weather */
+                path.addEventListener("click", function() {
                     paths.forEach(p => p.classList.remove("active-state"));
                     path.classList.add("active-state");
 
-                    // Show Tooltip
-                    tooltip.innerHTML = stateName;
-                    tooltip.style.display = "block";
-
-                    // Retrieve Data
-                    const data = stateData[stateName] || getFallbackData(stateName);
-
-                    // Update Details Card with animation
-                    cardStateName.style.opacity = 0;
-                    cardCrops.style.opacity = 0;
-                    cardSoil.style.opacity = 0;
-                    cardDiseases.style.opacity = 0;
-
-                    setTimeout(() => {
-                        cardStateName.innerHTML = `<span class="state-icon">📍</span> ` + stateName;
-                        cardCrops.innerText = data.crops;
-                        cardSoil.innerText = data.soil;
-                        cardDiseases.innerText = data.disease;
-                        cardHealthVal.innerText = data.health + "%";
-                        cardHealthFill.style.width = data.health + "%";
-
-                        cardStateName.style.opacity = 1;
-                        cardCrops.style.opacity = 1;
-                        cardSoil.style.opacity = 1;
-                        cardDiseases.style.opacity = 1;
-                    }, 100);
-                });
-
-                path.addEventListener("mousemove", function(e) {
-                    if (activeClickedState) return; // Block hover updates when zoomed in
-                    tooltip.style.left = e.clientX + "px";
-                    tooltip.style.top = e.clientY + "px";
-                });
-
-                path.addEventListener("mouseout", function() {
-                    if (activeClickedState) return; // Block hover updates when zoomed in
-                    path.classList.remove("active-state");
-                    tooltip.style.display = "none";
-                });
-
-                // Click event handles centering, zooming, overlaying state label, and blanking details card
-                path.addEventListener("click", function(e) {
-                    e.stopPropagation(); // Prevent triggering background click reset
-
-                    if (activeClickedState === path) {
-                        // Clicking zoomed state resets it
-                        resetZoom();
+                    const city = stateCapital[stateName];
+                    if (city) {
+                        fetchWeather(city, stateName);
                     } else {
-                        activeClickedState = path;
-
-                        // Highlight active state
-                        paths.forEach(p => p.classList.remove("active-state"));
-                        path.classList.add("active-state");
-
-                        // Get bounding box dimensions for centering and scaling
-                        const bbox = path.getBBox();
-                        const centerX = bbox.x + bbox.width / 2;
-                        const centerY = bbox.y + bbox.height / 2;
-
-                        // Calculate dynamic zoom scale factor based on bounding box
-                        const scale = Math.min(612 / bbox.width, 696 / bbox.height) * 0.55;
-
-                        // Map dimensions are 612x696, center point is (306, 348)
-                        const translateX = 306 - centerX * scale;
-                        const translateY = 348 - centerY * scale;
-
-                        // Apply transform logic
-                        mapGroup.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
-
-                        // Inject dynamic state label inside SVG
-                        const oldLabel = document.getElementById("active-state-label");
-                        if (oldLabel) oldLabel.remove();
-
-                        const textNode = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                        textNode.setAttribute("id", "active-state-label");
-                        textNode.setAttribute("x", centerX);
-                        textNode.setAttribute("y", centerY);
-                        textNode.setAttribute("text-anchor", "middle");
-                        textNode.setAttribute("dominant-baseline", "central");
-
-                        // Style properties to ensure high visibility
-                        textNode.style.fill = "#ffffff";
-                        textNode.style.fontFamily = "'Outfit', sans-serif";
-                        textNode.style.fontWeight = "800";
-                        textNode.style.fontSize = `${20 / scale}px`;
-                        textNode.style.filter = "drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.95))";
-                        textNode.style.pointerEvents = "none";
-                        textNode.textContent = stateName;
-
-                        mapGroup.appendChild(textNode);
-
-                        // Populate info card based on state
-                        if (allStatesCrops[stateName]) {
-                            // Display the plant list for the clicked state
-                            document.querySelector(".details-header").style.opacity = 1;
-                            document.querySelector(".details-grid").style.display = "none";
-                            
-                            cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName}`;
-                            
-                            const listContainer = document.querySelector(".plant-list-container");
-                            listContainer.innerHTML = "";
-                            listContainer.style.display = "flex";
-                            
-                            allStatesCrops[stateName].forEach(crop => {
-                                const isGujarat = (stateName === "Gujarat");
-                                const cropImgs = getCropImages(crop.name, isGujarat);
-                                const card = document.createElement("div");
-                                card.className = "plant-item-card";
-                                card.setAttribute("data-large", cropImgs.large);
-                                card.setAttribute("data-name", crop.name);
-                                card.innerHTML = `
-                                    <div class="plant-item-left">
-                                        <span class="plant-rank">#${crop.rank}</span>
-                                        <span class="plant-name-btn">${crop.name}</span>
-                                    </div>
-                                    <div class="plant-img-btn">
-                                        <img class="plant-thumb" src="${cropImgs.thumb}" alt="${crop.name}">
-                                    </div>
-                                `;
-                                listContainer.appendChild(card);
-                            });
-                            
-                            // Add click listener to the entire card to swap map with plant detail view
-                            listContainer.querySelectorAll(".plant-item-card").forEach(card => {
-                                card.addEventListener("click", function(ev) {
-                                    ev.stopPropagation();
-                                    const largeUrl = card.getAttribute("data-large");
-                                    const cropName = card.getAttribute("data-name");
-                                    
-                                    const detailView = document.getElementById("plant-detail-view");
-                                    const largeImg = document.getElementById("large-plant-image");
-                                    const detailText = document.getElementById("plant-detail-text");
-                                    const activeState = document.querySelector(".state-path.active-state");
-                                    const stateName = activeState ? activeState.getAttribute("name") : "";
-                                    
-                                    // State-specific overrides for key crops
-                                    const stateSpecificCrops = {
-                                        "Gujarat|Cotton": "Cotton is the king of Gujarat's cash crops, grown across Saurashstra, Kutch, and south Gujarat. Gujarat is India's largest cotton producer, contributing about 30% of national output. The crop thrives in black regur soil and requires 500–800 mm rainfall or equivalent irrigation. Sowing happens in June–July, with harvesting from October to January. Major Bt Cotton hybrids include Bunny, RCH, and Vikram. Bollworms and whiteflies are serious pests managed through pheromone traps and IPM. Apply 120:60:60 kg/ha N:P:K and supplement with boron for good boll development. A well-managed crop yields 25–30 quintals/ha of seed cotton.",
-                                        "Gujarat|Groundnut": "Groundnut is Gujarat's second most important oilseed crop, contributing roughly 40% of India's total production. Major regions include Junagadh, Rajkot, Bhavnagar, Amreli, and Jamnagar. Sown in June–July (kharif), harvested October–November in well-drained sandy loam soils requiring 500–600 mm rainfall. Varieties GG-2, GG-20, and GJG-9 are popular. Supplement with gypsum (400 kg/ha) at pegging stage for good pod fill. Tikka leaf spot and stem rot are managed through crop rotation and preventive mancozeb sprays. Yields of 20–30 quintals/ha are achievable under good management.",
-                                        "Jammu and Kashmir|Saffron": "Saffron, the world's most expensive spice, is grown exclusively in the Karewa plateau of J&K at 1600–2000 m altitude. Corms are planted in July–August and flowers appear in October–November. Only the three crimson stigmas per flower are harvested by hand within hours of blooming in the morning. It takes 75,000–150,000 flowers to produce 1 kg of dried saffron. GI-certified Kashmiri saffron commands Rs 2,50,000–3,50,000 per kg internationally. Corm rot (Fusarium) and corm weevil are major threats. Dry at 40–45°C for 12 hours to preserve color and aroma. Crop rotation with clover every 5–7 years replenishes soil fertility.",
-                                        "Himachal Pradesh|Apples": "Himachal Pradesh is India's apple capital — Shimla, Kullu, and Kinnaur districts produce the finest apples. The crop requires 1000–1500 chilling hours below 7°C for proper flowering. Popular varieties include Red Delicious, Royal Delicious, and Gala; Tydeman's Early Worcester for early season. Scab (Venturia inaequalis) is the most serious disease — follow a strict spray schedule from green-tip stage. Woolly apple aphid and codling moth require regular monitoring with pheromone traps. Fruit thinning with NAA improves size and prevents alternate bearing. Grading in 40-kg CFB boxes and cold chain management maximize returns. A mature orchard yields 20–30 tonnes/ha.",
-                                        "Kerala|Rubber": "Kerala accounts for over 80% of India's natural rubber production. Rubber trees begin tapping after 5–7 years at 6×6 m spacing. Tapping is done every alternate day using a half-spiral cut, yielding 200–350 g fresh latex per tree. Phytophthora leaf fall and powdery mildew are managed with copper and sulphur fungicides. Clone RRII-105 and PB-260 are high-yielding recommended varieties. Rubber wood is valuable as timber when the plantation is replanted after 25–30 years of tapping. Smoked rubber sheets (RSS) command better prices than liquid latex. Rubber replanting subsidy from the Rubber Board helps farmers manage the 5–7 year non-bearing period financially.",
-                                        "Assam|Tea": "Assam accounts for over 50% of India's total tea production. Tea thrives in acidic soils (pH 4.5–5.5) with the unique loamy Assam soil and heavy monsoon rainfall. The golden plucking standard is 'two leaves and a bud' every 7–12 days during the flushing period. Tea mosquito bug, red spider mite, and looper caterpillar are the main pests. Pruning every 3–5 years maintains bush vigour. Orthodox and CTC manufacturing methods produce different tea grades — Assam CTC is preferred for strong chai. Organic certification and specialty 'first flush' teas fetch premium export prices. Small Tea Growers (STGs) can form FPOs to improve bargaining power and access formal markets."
-                                    };
-
-                                    // General farmer-helpful descriptions for all crops
-                                    const generalCropInfo = {
-                                        "Rice": "Rice is India's most important food crop, grown in the kharif season (June–July sowing, October–November harvest). It requires warm, humid conditions (20–35°C) and 1000–2000 mm of water. Clay or clay-loam soils with good water retention are ideal. Recommended varieties include IR-64, Swarna, Pusa Basmati, and HMT depending on region. Blast disease, brown planthopper (BPH), and stem borer are the most damaging problems — monitor fields regularly and use Bt-based sprays. Practice Alternate Wetting and Drying (AWD) to save up to 30% water without yield loss. Apply nitrogen in three split doses (30:30:40 ratio at basal, tillering, and panicle initiation) for maximum productivity. A well-managed irrigated rice crop yields 50–70 quintals/ha.",
-                                        "Rice (Paddy)": "Rice (paddy) is the backbone of India's food security and the primary kharif crop of central and eastern states. It is transplanted into puddled fields during June–July and harvested in October–November after 120–150 days. For rainfed conditions, direct-seeded rice with drought-tolerant varieties like Sahbhagi Dhan or Swarna Sub-1 (flood-tolerant) is recommended. Stem borer and leaf folder are common pests — install light traps and use Trichogramma card for biological control. Bacterial leaf blight (BLB) spreads during storms — avoid excess nitrogen and use resistant varieties. Apply 100 kg/ha urea in three splits, 50 kg/ha DAP, and 33 kg/ha MOP as basal. Contact your local KVK for recommended varieties suited to your specific district, as variety choice is the single biggest factor in yield.",
-                                        "Wheat": "Wheat is India's second-most important cereal, sown in the rabi season (October–November) and harvested in March–April. It requires cool temperatures (15–20°C) during growing and warm, dry weather at maturity. Well-drained loamy soils with pH 6–7.5 are ideal. Recommended varieties include HD-2967, WH-1105, and GW-496. Yellow rust, brown rust, and powdery mildew are the main diseases — plant resistant varieties and spray propiconazole at first sign of rust. Timely irrigation at Crown Root Initiation (CRI), jointing, and grain filling stages is critical. Apply 120 kg/ha nitrogen in three splits, 60 kg/ha phosphorus, and 40 kg/ha potassium. Sowing in October (first week) gives higher yield than late sowing. A well-managed wheat crop yields 40–50 quintals/ha.",
-                                        "Maize": "Maize is a versatile crop grown in both kharif (June–July) and rabi seasons. It prefers well-drained, fertile loamy soils and temperatures of 21–30°C. Major commercial hybrids include Dekalb 9141, Pioneer 3396, and NK-6240. Fall Armyworm (FAW) is now the most serious pest — scout fields at the whorl stage and spray emamectin benzoate or chlorantraniliprole at early infestation. Turcicum leaf blight and downy mildew are common diseases in humid areas. Plant at 60×20 cm spacing with 1 seed per hill for optimal plant stand. Apply 180 kg/ha nitrogen in three equal splits at sowing, knee-high stage, and tasseling. Under irrigated conditions, a good maize crop yields 60–80 quintals/ha. Maize grain has excellent market demand from poultry, starch, and ethanol industries.",
-                                        "Maize (Corn)": "Maize (corn) is an important kharif cash crop with diverse uses — food, feed for poultry and cattle, starch, and ethanol production. It grows in well-drained sandy loam to clay loam soils and temperatures of 22–32°C. Hybrid seeds from companies like Pioneer, Syngenta, and Bayer consistently outperform local varieties — seed rate 18–22 kg/ha. Fall Armyworm (FAW) has become the single biggest threat to maize farmers in recent years — use pheromone traps for early detection and spray at first infestation at whorl stage. Apply fertilizer in three splits: basal (N:P:K), knee-high stage (nitrogen top-dress), and tasseling (potassium). Ensure proper moisture at silking and grain filling — moisture stress at these stages causes poor grain filling. Yields of 70–90 quintals/ha are achievable with irrigated hybrid cultivation.",
-                                        "Sugarcane": "Sugarcane is a 12–18 month crop requiring tropical temperatures (20–35°C) and 1500–2500 mm of water. Deep, well-drained loamy soils rich in organic matter are ideal. Important varieties include Co-86032, CoSe-98231, and CoJ-64 depending on region. Red rot disease is the most destructive — use disease-free setts and treat with Bavistin (0.1%) before planting. Ratoon crop management saves re-planting cost — apply fertilizer (75% of main crop dose) immediately after harvest and remove dead trash. Trash mulching conserves moisture and suppresses weeds. Apply 250 kg/ha nitrogen in three splits, 80 kg/ha phosphorus, and 60 kg/ha potassium for maximum yield. Drip irrigation with fertigation can save 40% water and increase sugar recovery. Contact your nearest sugar mill for binding contracts and advance variety guidance.",
-                                        "Cotton": "Cotton is a kharif cash crop requiring 6–8 warm months (25–35°C) to mature. It grows best in black cotton (vertisol) or red loamy soils with good drainage. Major Bt Cotton hybrids include MRC-7017 and NCS-145. Pink bollworm and whitefly are the most serious pest threats — install pheromone traps (5/acre) for monitoring. Spray Indoxacarb or Spinosad only when pest crosses Economic Threshold Level (ETL). Apply 120:60:60 kg/ha (N:P:K) and supplement boron (2 kg/ha) at boll formation stage. Avoid irrigation during boll opening to prevent boll rots. Deficit irrigation (0.6 IW/CPE ratio) optimizes water use. Pick cotton when bolls are fully open — never mix seed cotton from different pickings. Yields of 25–35 quintals/ha of seed cotton are achievable under optimum management.",
-                                        "Mustard": "Mustard is the most important rabi oilseed crop, sown October–November and harvested February–March. It thrives in cool weather (10–25°C) and well-drained loamy soils with pH 6–7. Early sowing is critical — every week of delay after mid-October reduces yield. Pusa Bold, RH-30, and Varuna are widely grown varieties. Aphid (Lipaphis erysimi) is the most devastating pest — when aphid colony exceeds 10/plant, spray oxydemeton methyl. White rust and alternaria blight are common diseases — spray mancozeb after first symptom. Apply 80 kg/ha nitrogen (half as basal, half as top-dress at 30 days), 40 kg/ha phosphorus, and 20 kg/ha sulfur (essential for oil quality). Harvest when 75% pods turn yellow — delay causes shattering loss. A good mustard crop yields 12–18 quintals/ha of seed.",
-                                        "Groundnut": "Groundnut is a major kharif oilseed crop that fixes atmospheric nitrogen. It prefers well-drained sandy loam soils with good calcium content. After flowering, apply gypsum (400 kg/ha) at pegging stage — calcium from gypsum directly nourishes developing pods. TAG-24, TG-26, and GG-20 are high-yielding varieties. Tikka leaf spot (Cercospora) and stem rot (Sclerotium rolfsii) are serious diseases — spray mancozeb at 30-day intervals. Earthing-up (hilling) 30 days after flowering is essential to help pegs penetrate the soil. Avoid waterlogging — it causes aflatoxin contamination in pods. Apply 25:50:75 kg/ha (N:P:K). Harvest 125–135 days after sowing when inner pods show dark veining. Dry pods to 8–9% moisture before storage to prevent aflatoxin. Yields of 20–30 quintals/ha of pods are achievable.",
-                                        "Potatoes": "Potato is a rabi crop in plains (October–November planting) and a kharif crop in hills. It thrives in cool weather (15–25°C) and loose, well-drained sandy loam soils rich in organic matter. Certified seed tubers with 2–3 eyes each (35–55 g) should be treated with Dithane M-45 before planting. Kufri Jyoti, Kufri Bahar, and Kufri Pukhraj are popular varieties. Late blight (Phytophthora infestans) spreads explosively in cool, wet weather — monitor disease forecast apps and spray mancozeb or metalaxyl preventively. Proper hilling (earthing-up) prevents greening of tubers and improves yield. Apply 180:80:100 kg/ha (N:P:K) in split doses. Irrigate at critical stages — planting, tuber initiation (45 days), and bulking (60–80 days). Store harvested potatoes in a cool, dark, ventilated space. Good crop yields 200–350 quintals/ha.",
-                                        "Potato": "Potato is the world's fourth-largest food crop and a key income crop for smallholder farmers. It grows in cool weather (15–25°C) in plains during rabi season and in hills during summer (kharif). Certified, disease-free seed tubers are the single most important input — local 'desi' seed carries virus and blight infections that reduce yield by 30–50%. Kufri Jyoti, Kufri Sindhuri, and Kufri Bahar are recommended varieties. Late blight is the most devastating disease — use weather-based advisory apps (Indiamet or Mahalanobis) to time preventive sprays. Cutworm, aphid (which spreads PVY virus), and nematodes are important pests. Apply 200 kg/ha urea, 375 kg/ha SSP, and 150 kg/ha MOP in splits. Contact your state seed corporation or CPRI for certified seed sourcing before each planting season.",
-                                        "Banana": "Banana is a year-round tropical crop requiring warm, humid conditions (20–35°C) and 1200–2000 mm rainfall or irrigation. Tissue-culture (TC) banana plants are strongly recommended — they are disease-free, uniform, and bear 2–3 months earlier than sucker-based planting. Grand Nain, Robusta, and Red Banana are popular commercial varieties. Fusarium wilt (Panama disease) has no cure — plant only resistant varieties and avoid replanting in infected soil. Bunch covering with blue/white polythene bags at 15 days after bunch emergence improves quality and protects from pests. Apply 200 g N, 60 g P, and 200 g K per plant per year in six equal splits. Irrigate every 3–4 days in summer — banana is extremely sensitive to drought during the first 6 months. Remove pseudostem and suckers except one follower. Average yield is 40–80 tonnes/ha.",
-                                        "Mango": "Mango, the king of fruits, is a tropical evergreen tree that bears fruit from March to July. It requires a hot, dry summer for flowering stimulation and monsoon rainfall for vegetative growth. Sandy loam to loamy soils with pH 5.5–7.5 and good drainage are preferred. Alphonso, Dasheri, Langra, and Amrapali are the leading commercial varieties; Totapuri is the processing variety. Mango hoppers and mealybug are the most damaging pests — spray imidacloprid at pre-blossom and Quinalphos at second blossom. Powdery mildew on inflorescence during cool, humid weather is managed with wettable sulphur. Apply 500 g N, 200 g P, and 750 g K per tree per year, split over monsoon and post-monsoon periods. Alternate bearing is managed with Paclobutrazol (soil drench) — consult your horticulture officer for dosage. A bearing mango tree yields 100–200 kg/year.",
-                                        "Mangoes": "Mango orchards require proper spacing (10×10 m to 8×8 m) for sunlight and air penetration. In high-density planting systems (5×5 m), yields of 25–30 tonnes/ha are achievable from the 8th year onward. Grafted plants of certified variety start bearing in 3–4 years compared to 7–8 years for seedling trees. Malformation (vegetative and floral) is caused by a mite (Aceria mangiferae) — prune affected panicles immediately and spray dicofol + kelthane. Fruit fly (Bactrocera dorsalis) damages ripening fruit in the orchard — install 4–6 methyl eugenol traps/ha for monitoring and bait sprays for management. Post-harvest losses in mango can be 25–40% — use CFB cartons, refrigerated transport, and hot-water treatment (48°C, 60 min) for export quality. Alphonso mango from the Konkan belt and GI-certified Ratnagiri mangoes fetch premium prices.",
-                                        "Coconut": "Coconut is a perennial tree crop of coastal tropical regions, bearing fruit year-round. It grows in well-drained sandy loam or laterite soils within 30 km of the coast. West Coast Tall and hybrids like CHOGHAT give 80–120 nuts/palm/year under good management. The palm bears from 6–8 years onward. Rhinoceros beetle bores into the crown — remove dead palms and apply phorate in the crown to kill grubs; install pheromone traps for monitoring. Red palm weevil is a devastating pest — remove and destroy infested palms to prevent spread. Root wilt disease has no cure — plant certified disease-free seedlings from state nurseries. Apply 1.3 kg N, 0.9 kg P₂O₅, and 4.5 kg K₂O per palm annually, along with 50 kg compost. Intercropping with cocoa, banana, or vegetables in coconut gardens improves farm income by 60–80%.",
-                                        "Tea": "Tea is a perennial plantation crop requiring cool, moist climates (13–29°C) and 1500–2500 mm of well-distributed rainfall. It grows in well-drained acidic soils (pH 4.5–5.5) rich in organic matter. The golden plucking standard — 'two leaves and a bud' every 7–12 days — is essential for quality. Tea mosquito bug, red spider mite, and looper caterpillar are the main pests — spray malathion or abamectin at threshold. Pruning every 3–5 years maintains bush vigour and manages the plucking table. Clonal tea from Tocklai Tea Research Institute (TRA) gives higher yield and better quality than seedling bushes. Organic tea and specialty 'single-estate' teas command 30–50% premium prices. Small tea growers (STGs) can access the Pradhan Mantri Fasal Bima Yojana (PMFBY) scheme for crop insurance.",
-                                        "Jute": "Jute is a kharif fibre crop sown March–May and harvested 100–120 days later when plants begin to flower. It requires warm, humid conditions (24–37°C) and 1000–1500 mm rainfall. JRO-524 (Surya) and JRO-8432 are high-yielding recommended varieties. The most critical post-harvest step is retting — bundle harvested stalks and submerge in slow-moving water for 20–30 days to soften and separate fibres. Retting in stagnant water produces dark, weak fibre — always use flowing or tank water with proper microbial activity. Yellow mite damages tender leaves — spray wettable sulphur. Apply 60 kg/ha nitrogen, 30 kg/ha phosphorus, and 30 kg/ha potassium. Good quality white jute fetches Rs 4,000–6,000 per quintal. Jute Geo-Textiles (JGT) for erosion control and jute shopping bags offer lucrative market opportunities beyond traditional gunny bags.",
-                                        "Rubber": "Rubber (Hevea brasiliensis) is a perennial plantation crop providing natural latex for industrial rubber. It requires hot, humid tropical climate (25–34°C), annual rainfall of 2000–4000 mm, and no prolonged dry season. Deep, well-drained laterite soils are ideal. Trees are tapped every alternate day using a half-spiral cut on the bark. Clone RRII-105 and PB-260 are the highest-yielding recommended varieties. Phytophthora leaf fall and powdery mildew are the most common diseases — spray copper fungicides and sulphur respectively. Apply fertilizer as per Rubber Board recommendation: mixture of N, P, K, and Mg. Rubber Board of India provides subsidy for new planting, replanting, and farm mechanization — register with your nearest rubber board office to access benefits. Rubber wood is valuable as timber when the plantation is replanted after 25–30 years.",
-                                        "Soybean": "Soybean is a kharif legume sown June–July and harvested September–October. It fixes atmospheric nitrogen (40–80 kg/ha), reducing fertilizer costs for the following crop. Inoculate seeds with Bradyrhizobium japonicum culture before sowing for maximum nitrogen fixation. JS-335, NRC-37, and MAUS-47 are popular recommended varieties. Yellow mosaic disease (YMD) transmitted by whitefly is the most serious disease — treat seeds with thiamethoxam for whitefly control and plant resistant varieties. Girdle beetle is a major stem pest — remove and destroy affected plants promptly. Apply 20:80:40 kg/ha (N:P:K) at sowing — no top-dress nitrogen needed if inoculation is done. Harvest promptly when pods rattle — delayed harvest causes shattering loss. A well-managed soybean crop yields 18–25 quintals/ha and improves soil fertility for the next crop (wheat or chickpea).",
-                                        "Pulses": "Pulses (pigeon pea, green gram, black gram, chickpea, lentils) are protein-rich crops that fix 40–100 kg/ha atmospheric nitrogen, improving soil fertility. Most pulses prefer well-drained sandy loam soils with pH 6–7.5. Always inoculate seeds with appropriate Rhizobium culture (strain-specific) before sowing for maximum nitrogen fixation. Pulse beetle (Callosobruchus maculatus) is the most serious storage pest — treat harvested grain with safe grain protectants like neem oil or deltamethrin dust. Wilt, root rot, and mosaic diseases are common — plant disease-resistant certified varieties. Apply only 20 kg/ha nitrogen as starter dose with 40–60 kg/ha phosphorus and 20 kg/ha potassium. Intercropping pulses with cereals or oilseeds reduces risk and improves overall farm income. Pulses command strong market prices and are in consistent domestic demand — contact NAFED or local FPOs for minimum support price (MSP) procurement.",
-                                        "Lentils": "Lentils (masoor) are cool-season rabi legumes sown October–November and harvested in March. They prefer well-drained loamy soils with pH 6–8 and cool temperatures (18–25°C). Pant L-406, HUL-57, and IPL-316 are popular varieties. Lentils are water-efficient — just 1–2 light irrigations at flowering and pod-filling are sufficient. Rust (Uromyces fabae) is the most important foliar disease — spray mancozeb or propiconazole at early infection. Aphid colonies on growing tips reduce yields — spray imidacloprid at threshold. Seed treatment with Rhizobium and Phosphate Solubilizing Bacteria (PSB) cultures before sowing is highly recommended. Apply 15 kg/ha nitrogen (starter only) and 40 kg/ha phosphorus as basal. Lentils are a high-protein food (25–28% protein) with growing export demand. Harvest promptly when 80% pods turn straw-coloured to prevent shattering loss. Expected yield: 12–18 quintals/ha.",
-                                        "Sugarcane": "Sugarcane is grown as a 12–18 month kharif plantation crop across tropical India. It requires warm temperatures (20–35°C) and 1500–2500 mm of water through irrigation or rainfall. Deep, well-drained loamy soils are preferred. Select disease-free setts of recommended varieties like Co-86032 and treat with Bavistin (0.1%) before planting. Red rot is the most destructive disease — never use setts from affected fields. Ratoon crop (second harvest from the same root) saves replanting costs. Apply 250 kg/ha nitrogen in three splits (planting, 90 days, 150 days), 80 kg/ha phosphorus, and 60 kg/ha potassium. Drip fertigation can save 40% water and increase sugar recovery by 0.5–1 unit. Keep contact with your nearest sugar mill for linkage and MSP for sugarcane.",
-                                        "Tobacco": "Tobacco is a high-value regulated cash crop grown under Tobacco Board licensing in Andhra Pradesh, Karnataka, and Gujarat. The flue-cured Virginia (FCV) variety is transplanted from nursery beds after 45–60 days. Soil fumigation with Metam sodium helps control nematodes and soil-borne diseases. Topping (removal of the flower head) and timely sucker removal with maleic hydrazide (MH) are essential for quality leaf production. Mosaic virus and black shank (Phytophthora) are serious diseases — plant resistant varieties and treat seed with metalaxyl. FCV tobacco is cured in flue-curing barns over 7 days at temperature-humidity schedules specified by the Tobacco Board. FCV tobacco fetches Rs 150–250/kg at auction — quality depends on leaf color (lemon-orange), texture, and curing. Register with the Tobacco Board (tobaccoboard.gov.in) before planting to access MSP and auction market.",
-                                        "Turmeric": "Turmeric is a high-value spice crop requiring hot, humid conditions (20–35°C) and 1500 mm rainfall or irrigation. It grows in well-drained loamy soils rich in organic matter. Plant in April–May using healthy mother rhizomes at 45×30 cm spacing. BSR-2, Prathibha, and Sugandham are high-curcumin varieties commanding best prices. Rhizome rot (Pythium aphanidermatum) is the most serious disease — treat rhizomes with Ridomil before planting, ensure proper drainage, and practice crop rotation. Shoot borer damages the pseudostem — spray Dichlorvos at infestation. Apply 120:60:120 kg/ha (N:P:K) with 30 tonnes/ha FYM. Mulching with green leaves (paddy straw or coconut fronds) conserves moisture and suppresses weeds. Harvest at 8–9 months; boil, dry, and polish rhizomes for market. A good crop yields 20–25 tonnes/ha fresh rhizome (5–6 tonnes dry). Erode and Salem are major turmeric trade centres.",
-                                        "Ginger": "Ginger is a warm-season spice crop requiring 20–30°C and 1500 mm rainfall or equivalent irrigation. It is sensitive to waterlogging and does best in well-drained, loamy soils rich in organic matter with partial shade. Plant March–May using healthy, disease-free seed rhizomes (15–20 g) treated with Dithane M-45. Suprabha, Suruchi, and Rio-de-Janeiro are popular varieties. Soft rot (Pythium sp.) is the most devastating disease — treat seed with fungicide, practice 4-year crop rotation, and avoid waterlogging at all costs. Rhizome fly bores into rhizomes — apply Chlorpyrifos in soil at planting and repeat 45 days later. Apply 125:125:125 kg/ha (N:P:K) with 30 tonnes/ha FYM. Mulching with green leaves (10 tonnes/ha) is essential. Harvest fresh (green) ginger at 6 months or dry ginger at 8–9 months. Average yield is 15–25 tonnes/ha. Cochin and Calicut are the major ginger trading centres.",
-                                        "Cardamom": "Cardamom, the queen of spices, is grown in high-altitude (600–1500 m) shaded forests of the Western Ghats. It requires moderate temperatures (15–35°C), heavy rainfall (1500–4000 mm), and deep, humus-rich loamy soils under 50–60% shade. Njallani (CCS-1), IISR Avinash, and PV-1 are high-yielding recommended varieties. Thrips (Sciothrips cardamomi) transmit Katte disease — spray malathion during flowering and maintain weed-free plots. Azhukal disease (Phytophthora) causes capsule rot in the wet season — spray Bordeaux mixture or Ridomil M. Harvest capsules when green to light green — ripe capsules shatter and lose quality. Cure at 45°C for 18–24 hours in mechanical dryers to get bright green colour. Average yield is 150–200 kg/ha dry capsules. Spices Board India (spiceboard.gov.in) provides subsidy for plantation development and processing equipment.",
-                                        "Black Pepper": "Black pepper, the king of spices, is a climbing vine requiring humid tropical climate (20–35°C), 2000–3000 mm rainfall, and well-drained, rich loamy soils. Train vines on living standards (Garuga pinnata or Erythrina) or concrete pillars at 2.5×2.5 m spacing. Panniyur-1, Sreekara, Subhakara, and IISR Thevam are high-yielding varieties. Pollu beetle causes berry drop — dust with carbaryl powder at flowering. Quick wilt (Phytophthora capsici) kills vines rapidly during monsoon — apply Bordeaux mixture at the base of the vine in May and August, and ensure excellent drainage. Foot rot causes gummosis at the base — treat with copper fungicides. Harvest spikes when 1–2 berries per spike turn red — sun-dry for 3–4 days to get black pepper. A mature vine (8+ years) yields 3–5 kg dry pepper. Register with the Spices Board for GI certification and export market linkage.",
-                                        "Coffee": "Coffee is a plantation crop grown in the Western Ghats (Karnataka, Kerala, Tamil Nadu) and Northeastern hills. Arabica (shade-grown, 1000–1500 m altitude) and Robusta (500–1000 m) are the two types grown commercially. S-795, CxR Cauvery, and Chandragiri are popular varieties. Coffee white stem borer is a serious pest — remove bark from affected stems to find the grub and destroy it. Coffee leaf rust (Hemileia vastatrix) is the primary disease — spray copper fungicides at 90-day intervals. Blossom showers in February are critical for uniform berry set — if absent, schedule irrigation to induce flowering. Harvest cherries at full red ripeness — selective handpicking gives the best quality. Wet processing (washed method) produces premium Arabica coffee. Register with the Coffee Board of India (coffeeboardofindia.org) for subsidy, minimum price support, and export facilitation.",
-                                        "Cashew": "Cashew is a coastal tree crop tolerant of poor laterite soils, making it ideal for marginal and tribal lands. It requires a long dry season (5–6 months) for proper flowering and good drainage. Plant 1-year-old grafted plants of Vengurla-4, VRI-1, or TNCA-8 during the monsoon at 7×7 m spacing. Tea mosquito bug (Helopeltis antonii) is the single most destructive pest — spray dimethoate at the beginning of blossom. Powdery mildew on inflorescence reduces fruit set — spray wettable sulphur. The cashew apple can be processed into juice, wine, or feni for additional income. The raw nut must be roasted or steam-processed to neutralize the toxic shell oil (CNSL) before kernel extraction. CNSL itself is a valuable industrial chemical. A bearing tree (7+ years) yields 10–15 kg raw nuts annually. Karnataka, Maharashtra, and Goa are major cashew producing states.",
-                                        "Arecanut": "Arecanut (betelnut) palm requires humid tropical climate with rainfall above 1500 mm. Plant in fertile clay loam soils with a high water table at 2.7×2.7 m spacing using healthy 9-month-old seedlings. Mangala, Sumangala, and VTLAH are recommended productive varieties. Bud rot (Phytophthora palmivora) is the most devastating disease — remove and destroy the infected crown immediately and spray Bordeaux mixture on surrounding palms as prophylactic. Yellow leaf disease (YLD) is a phytoplasma disease with no cure — prevent by controlling its insect vector. Koleroga (mahali) causes premature fruit fall during the monsoon — spray Bordeaux mixture at onset of southwest monsoon. Apply 100 g N, 40 g P₂O₅, and 140 g K₂O per palm per year with 12 kg organic manure. Harvest at appropriate maturity for different products — tender for chali, ripe for poga. Karnataka and Kerala are major producing states.",
-                                        "Soybeans": "Soybean is one of the most profitable kharif crops due to its high-value protein and oil meal. It fixes atmospheric nitrogen through root nodule bacteria, improving soil for the next crop (wheat or chickpea). Sow in June–July when soil moisture is good; JS-335, NRC-37, and SL-525 are high-yielding varieties for different regions. Seed inoculation with Bradyrhizobium japonicum culture is mandatory — no inoculation means no nitrogen fixation. Yellow mosaic disease (YMD) can devastate the crop — control whitefly vector with thiamethoxam seed treatment. Girdle beetle and stem fly are important early-season pests. Apply 20:80:40 kg/ha (N:P:K) — excess nitrogen suppresses nodulation. Harvest promptly when pods rattle to avoid shattering loss; combine harvesting must be done in the morning when dew prevents pod shatter. Yields of 18–25 quintals/ha are achievable.",
-                                        "Millet": "Millets (finger millet, foxtail millet, little millet, kodo, proso) are ancient, highly nutritious small grains. They are exceptionally drought-tolerant and grow on poor, shallow soils where other cereals fail, making them the safety net crop for dryland farmers. Millets contain 7–12% protein, are high in dietary fibre, calcium, and iron, and are naturally gluten-free. The Government of India's promotion of 2023 as the International Year of Millets has created major new market opportunities. Traditional millet cultivation requires minimal fertilizer and irrigation — making them genuinely organic crops at low cost. The main challenge is dehulling — a community-level millet processing unit (mini dal mill) can solve this and add value. Millet flour, puffs, ladoos, and malt sell at 5–10 times the grain price. Contact your state agriculture department for access to PM-AASHA scheme and ODOP (One District One Product) support for millets.",
-                                        "Ragi": "Ragi (finger millet, Eleusine coracana) is a nutritious food security crop of southern India, particularly Karnataka. It grows in poor soils where other cereals fail and requires only 500–1000 mm rainfall. GPU-28, HR-911, and MR-6 are high-yielding varieties. Transplanting (paddy-style nursery followed by transplanting) gives 20–30% higher yield than direct sowing. Blast disease (Pyricularia grisea) is the most devastating disease — spray tricyclazole (Beam) at booting stage. Ragi contains 344 mg/100g calcium — the highest of any cereal — making it a natural supplement against osteoporosis. It is naturally gluten-free, commanding premium price in health food markets. Value-added products like ragi malt, biscuits, idli mix, and energy bars sell at 5–10 times the raw grain price. Apply 60–80 kg/ha nitrogen in two splits, 40 kg/ha phosphorus. Expected yield: 25–35 quintals/ha under irrigated conditions.",
-                                        "Jowar": "Jowar (sorghum) is a versatile, drought-tolerant kharif crop — India's third most important cereal. It performs excellently in dryland situations with 400–600 mm rainfall and temperatures of 26–34°C. CSV-15, SPH-1634 (hybrid), and M-35-1 (Maldandi) are popular varieties. Charcoal rot (Macrophomina phaseolina) develops under drought and heat stress — plant early and ensure proper soil moisture during grain filling. Grain mold during wet conditions at maturity reduces quality — harvest immediately at physiological maturity. Jowar has excellent ratoon ability — apply fertilizer immediately after harvest and the ratoon crop gives 60–70% yield with minimal input cost. Apply 80–100 kg/ha nitrogen in two splits, 40 kg/ha phosphorus. Sweet sorghum varieties are used for bioethanol production — a growing market opportunity. Stalks serve as excellent dry and green fodder for cattle. Expected yield: 25–35 quintals/ha rainfed.",
-                                        "Bajra": "Bajra (pearl millet) is the most drought-tolerant cereal, thriving in hot, arid conditions (25–35°C) with as little as 300–400 mm rainfall. Sandy soils with poor fertility that cannot support other crops are ideal. HHB-67 Improved, Rajshakti, and 86M64 are proven hybrid varieties. Ergot disease (Claviceps fusiformis) causes grains to be replaced by poisonous honeydew-exuding sclerotia in wet weather — spray mancozeb at 50% flowering. Downy mildew (Sclerospora graminicola) is a systemic disease — seed treatment with metalaxyl is mandatory. Apply 60–80 kg/ha nitrogen in two splits (sowing and 25 days). Bajra grain is nutritious — high iron, zinc, and B-vitamins — making it valued in health food markets. It is also one of the best green fodder crops for dairy farmers. Expected yield: 20–30 quintals/ha grain under rainfed conditions.",
-                                        "Barley": "Barley is a rabi cereal with remarkable adaptability — it tolerates saline soils, waterlogged conditions, and late planting better than wheat. Sow in October–November and harvest in March–April. K-572, RD-2552, and BH-902 are high-yielding two-rowed (malting) varieties. Malting barley for the brewing industry fetches premium prices — contact UB Group or SAB Miller for contract farming. Yellow rust (Puccinia striiformis) is the most important disease — plant resistant varieties. Barley stripe (seed-borne disease) is controlled by carboxin seed treatment. Apply 60–80 kg/ha nitrogen in two splits. Barley is an excellent winter fodder crop when cut at 45 days ('Hari Jau') — the cut crop regenerates and produces grain. It is also the principal ingredient in animal feed, malt beverages, and health foods. Expected grain yield: 30–40 quintals/ha.",
-                                        "Gram": "Chickpea (Bengal gram) is the most important rabi pulse crop of India. It grows in cool, dry weather (15–30°C) in medium to heavy well-drained soils with pH 6–8. Sow in October–November after the kharif season rains recede. Desi types (Pusa-391, JG-315) are more nutritious; Kabuli types (L-550, JAKI-9218) give larger seeds for export at premium prices. Pod borer (Helicoverpa armigera) is the most devastating pest — use pheromone traps (5/ha) for monitoring; spray NPV or Bt at early infestation, chemical only if population exceeds ETL. Fusarium wilt is a soil-borne disease — plant wilt-resistant varieties. Chickpea is highly sensitive to waterlogging — strictly avoid heavy soils. Inoculate seeds with Mesorhizobium cicer for nitrogen fixation. Apply 20 kg/ha starter nitrogen and 40 kg/ha phosphorus. Expected yield: 15–20 quintals/ha.",
-                                        "Sunflower": "Sunflower is a versatile oilseed crop grown in kharif, rabi, and summer seasons. It tolerates a wide range of soils (pH 6–8) and temperatures of 20–28°C during growing. Hybrid varieties like KBSH-44, MSFH-8, and Sungold give high oil content (40–42%). Sunflower is cross-pollinated — place 3–4 honeybee hives per hectare near the crop during flowering to improve seed set by 30–50%. Alternaria leaf spot is common — spray mancozeb at early infection. Sclerotinia stem rot is serious in cool, humid conditions — avoid dense planting and spray carbendazim. Apply 90–100 kg/ha nitrogen, 40 kg/ha phosphorus, and 30 kg/ha sulphur (essential for oil quality). Harvest when the back of the head turns yellow and bracts dry — delay leads to seed shattering and bird damage. Expected yield: 20–28 quintals/ha.",
-                                        "Garlic": "Garlic is a high-value rabi crop planted October–December and harvested March–April. It prefers cool weather (13–24°C) and well-drained, fertile loamy soils with pH 6–7. Plant individual cloves (8–10 g each) at 15×7.5 cm spacing — large cloves give bigger bulbs. Yamuna Safed (G-50), Agrifound White, and Bhima Purple are recommended varieties. Purple blotch and Stemphylium blight are serious leaf diseases — spray iprodione or mancozeb every 15 days from 45 days after planting. Thrips damage is common in dry weather — spray spinosad or NSKE 5% at 7-day intervals. Bulbing requires 12–14 hours of daylight — garlic planted too late in the season does not bulb properly. Stop irrigation 15 days before harvest. Cure at ambient temperature for 15 days before storage. India is a major garlic exporter. Madhya Pradesh accounts for ~50% of national production. Expected yield: 100–150 quintals/ha.",
-                                        "Cumin (Jeera)": "Cumin is a premium rabi spice crop grown mainly in Rajasthan and Gujarat, commanding Rs 20,000–35,000/quintal. It prefers cool, dry weather (20–30°C days, 10–15°C nights) and well-drained sandy loam soils. Sow in October–November and harvest in February–March. GC-1, GC-2, and RZ-19 are commonly grown varieties. Blight (Alternaria and Ramularia complex) is the most devastating disease — a single foggy day can wipe out an entire crop. Spray carbendazim + mancozeb every 10–15 days starting 30 days after sowing. Wilt (Fusarium oxysporum) is soil-borne — practice 4-year crop rotation. Apply only 30 kg/ha nitrogen and 20 kg/ha phosphorus — cumin is a light feeder. Requires only 2–3 light irrigations. GI-tagged 'Unjha cumin' from Gujarat fetches the highest prices. Expected yield: 4–8 quintals/ha under good management.",
-                                        "Coriander": "Coriander is a dual-purpose rabi spice crop — the leaves are used as fresh herb and seeds as a spice. It prefers cool, dry weather (15–25°C) and well-drained loamy soils. Rajendra Swathi, Sudha, and CS-6 are popular seed-purpose varieties. Powdery mildew (Erysiphe polygoni) is the most common disease — spray wettable sulphur at early stages. Wilt (Fusarium) can be managed by Trichoderma viride seed treatment. Apply 60 kg/ha nitrogen in two splits and 30 kg/ha phosphorus at sowing. Requires 3–4 light irrigations during its 110–120 day season. Harvest at full seed maturity for best aroma — premature harvest gives light seeds with poor essential oil content. Coriander essential oil (steam distilled) sells at Rs 3,000–5,000/kg — value addition can triple farmer income. Expected yield: 8–12 quintals/ha dry coriander seed.",
-                                        "Castor Seed": "Castor (Ricinus communis) is a drought-tolerant kharif crop grown for its oil-rich seeds. India is the world's largest producer and exporter of castor and castor oil. Castor prefers deep, well-drained sandy loam soils and temperatures of 20–35°C. GCH-4, GCH-7, and PCSH-118 are high-yielding hybrids. The crop tolerates drought well but is intolerant of waterlogging and cold. Castor semilooper (Achaea janata) and capsule borer are major pests — spray quinalphos or Bt formulations. Wilt (Fusarium oxysporum) is managed by planting resistant varieties. Apply 80 kg/ha nitrogen (40 kg basal + 40 kg at 45 days), 40 kg/ha phosphorus. Castor oil is used in bio-lubricants, pharmaceuticals, cosmetics, and biodiesel — a truly industrial crop with excellent market prospects. Expected yield: 15–20 quintals/ha. Gujarat's Uchhal and Dholka areas are the global center of castor trade.",
-                                        "Grapes": "Grapes are grown in two main seasons in India — kharif (June–September) and rabi (October–March) — with the rabi crop giving better quality. Nashik (Maharashtra) and Bijapur (Karnataka) are India's premier grape-growing regions. Thompson Seedless, Sharad Seedless, and Sonaka are the dominant table varieties. Vines are trained on overhead 'T-bar' or 'telephono' (Y-shape) trellises for maximum sun exposure. Powdery mildew and bunch stem necrosis (BSN) are major quality problems — spray wettable sulphur + calcium at fortnightly intervals. Dormancy breaking with hydrogen cyanamide (Dormex 2%) spray at pruning ensures uniform bud burst. Proper canopy management (defoliation at colour break, shoot tipping) directly improves cluster size and berry uniformity. GlobalGAP certification is needed for European export markets. Indian exports (Nashik grapes) are highest quality — target the UK, Netherlands, and UAE markets. Expected yield: 25–35 tonnes/ha.",
-                                        "Onions": "Onion is a major rabi and kharif vegetable, with the rabi crop (October–March) producing better quality bulbs for storage. It prefers well-drained, fertile loamy soils with pH 6–7 and cool temperatures during growing (13–24°C). Agrifound Dark Red, N-2-4-1, and Bhima Red are recommended varieties. Thrips (Thrips tabaci) is the most serious pest — spray imidacloprid or spinosad at threshold levels. Purple blotch (Alternaria porri) causes severe foliage damage — spray mancozeb or iprodione. Basal rot (Fusarium) damages bulbs in storage — cure harvested bulbs at 35°C for 2 weeks before storage. Harvest when 75% tops fall — over-mature bulbs have poor shelf life. NAFED procures onion at MSP to protect farmer prices — register with your nearest government procurement centre. Expected yield: 200–350 quintals/ha.",
-                                        "Saffron": "Saffron, the world's costliest spice at Rs 2.5–3.5 lakh/kg, is grown exclusively in the Karewa plateau of J&K at 1600–2000 m altitude. Corms are planted in July–August in well-drained, sandy loam soils. The purple flowers emerge in October–November and must be picked at dawn on the day of blooming. Only the three bright red stigmas per flower constitute saffron — it takes 75,000–1,50,000 flowers per kg. Corm rot (Fusarium oxysporum) and corm weevil are the main pest problems. Dry harvested stigmas at 40–45°C for 12 hours — proper drying preserves crocin color and safranal aroma. GI certification of Kashmiri saffron (Zafrani) helps command premium prices in international markets. The National Saffron Mission provides subsidy for micro-irrigation, soil improvement, and post-harvest facilities to J&K saffron farmers.",
-                                        "Apples": "Apple cultivation is mainly done in the high-altitude Himalayan regions (1500–3000 m) of J&K, Himachal Pradesh, and Uttarakhand. Apples require 1000–1500 chilling hours below 7°C for proper bud break and flowering. Delicious, Ambri, Royal Gala, Fuji, and Granny Smith are popular varieties. Pollinator varieties (Golden Delicious or Mollies Delicious) must be planted at 10–15% proportion for cross-pollination. Scab (Venturia inaequalis) is the most damaging disease — follow a strict 10-spray schedule from green-tip to harvest. Woolly apple aphid, codling moth, and European red mite are important pests. Fruit thinning with NAA (7.5 ml/10 L) at 10–12 mm fruit size improves colour, size, and prevents alternate bearing. Apply 700–900 g N, 70–90 g P, and 700–900 g K per tree annually. Grade apples in 40-kg CFB boxes with foam nets for premium market prices. Expected yield: 20–35 tonnes/ha in mature orchards.",
-                                        "Walnuts": "Walnut trees are grown at 1500–3000 m altitude in J&K, Himachal Pradesh, and Uttarakhand. Trees require 400–500 chilling hours below 7°C for dormancy breaking and long, cool summers for nut development. Kashmir walnut (Kagzi variety) with thin shell and high-quality kernels is world-famous. Orchards are established at 10×10 m spacing with 2-year-old grafted plants — seedling trees take 12–15 years to bear, grafted trees bear in 5–7 years. Walnut blight (Xanthomonas arboricola) causes black lesions on nuts during spring rains — spray copper fungicide at bud burst. Walnut aphid and codling moth are important pests. Extract nuts in October–November after the green husk splits naturally — forced extraction damages the kernel. Dry kernels to 4–5% moisture to prevent mold in storage. Indian walnuts fetch premium prices in domestic and international markets. A mature orchard (20+ years) yields 20–35 kg nuts per tree.",
-                                        "Almonds": "Almonds are grown commercially in the Ladakh region of J&K and some parts of Himachal Pradesh. They bloom very early (February–March) and late frost at flowering can destroy the entire crop — protect trees with frost barriers or smoke at blossom time. At least 2–3 different cross-pollinating varieties must be planted together — self-pollination does not set fruit. California Nonpareil and Carmel are high-yielding varieties. Almond webworm, shot-hole disease (Wilsonomyces carpophilus), and brown rot (Monilinia) are important pest and disease challenges. Trees bear from 3–4 years (grafted) and reach full production at 12–15 years. Hull the almonds as soon as the hull cracks open naturally. Dry in-shell to 6–8% moisture before storage. Indian domestic demand for almonds far exceeds production — the import gap makes domestic almond cultivation very profitable for suitable areas.",
-                                        "Cherries": "Cherry cultivation is gaining commercial importance in J&K (Shopian, Sopore, Pulwama) and Himachal Pradesh (Kullu, Shimla). Sweet cherry (Prunus avium) varieties are grown for fresh market. Cherries are strict cross-pollinators — plant two compatible varieties together (e.g., Bigarreau Napoleon + Early Rivers). Cherry fruit fly (Rhagoletis cerasi) is the main pest — use exclusion nets to protect maturing fruit. Brown rot (Monilinia fructicola) can destroy the crop during wet weather — apply fungicides at petal fall and repeat every 10–14 days. Harvest in May–June when fruit reaches full colour — the window is very short (3–4 weeks). Fresh cherries have only 5–7 days shelf life even refrigerated — rapid marketing or cold storage is essential. Cherries command Rs 200–800/kg at farm level — significantly higher than apple. Value addition into dried cherries, jam, or cherry wine can improve margins further.",
-                                        "Peaches": "Peach (Prunus persica) is the easiest stone fruit to grow commercially in Himachal Pradesh (Solan, Bilaspur), J&K, and Uttarakhand. It produces within 3 years of planting grafted trees and has lower chilling requirements (400–700 hours) than apple or cherry — making it suitable for lower hill elevations. Shan-i-Punjab, Himgiri, and Florda Prince (low-chill variety) are popular commercial varieties. Peach leaf curl (Taphrina deformans) develops during wet spring weather — a single copper spray before bud swell in late February completely prevents it. Oriental fruit moth bores into young shoots and fruit — apply pheromone traps and spray Chlorpyrifos at early infestation. Thin fruits to 15–20 cm apart on branches to improve size. Harvest slightly under-ripe for transport — fruit ripens within 3–4 days at room temperature. Early-season peach (from lower elevations) fetches premium prices before the main season.",
-                                        "Plums": "Plum cultivation is practiced in Himachal Pradesh (Shimla, Kullu), J&K, and Uttarakhand. Japanese plums (Prunus salicina) with lower chilling requirements (300–600 hours) like Satluj Purple, Kala Amritsari, and Santa Rosa are grown in medium-altitude areas; European types need higher elevations. Plums are partially self-fertile — planting two varieties improves yields. Brown rot (Monilinia) is a serious problem during harvest rain — spray fungicide at first colour break. Plum curculio (weevil) punctures fruit — spray carbaryl at petal fall. Fruit should be thinned to 8–10 cm apart after natural June drop to improve size. Plums can be processed into prunes (sun-dried), jam, plum wine, or candied fruit for added income. Plum orchards are less labour-intensive than apples but require similar post-harvest handling for quality produce.",
-                                        "Pineapple": "Pineapple is a tropical fruit crop that grows in warm, humid climates (22–32°C) and well-drained, sandy loam soils rich in organic matter. The plant grows from suckers, slips, or ratoon shoots planted at 30×30 cm in double rows. Kew (Cayenne) is the dominant variety for canning and export; Queen and Mauritius are grown for fresh consumption. Top rot (Phytophthora) is a serious disease during excessive rain — improve drainage and spray Ridomil M. Mealybug Wilt of Pineapple (MWP) is a major viral disease transmitted by mealybugs — control mealybugs with chlorpyrifos spray. Uniform flowering can be induced with ethephon (Ethrel) spray — spray 25 ml in 10 L water into the crown to stagger harvest over 2–3 months. Apply 8 g N, 3 g P, and 10 g K per plant annually in four splits. Expected yield: 35–50 tonnes/ha. Northeast India and Kerala are major producing regions.",
-                                        "Jackfruit": "Jackfruit is the world's largest tree-borne fruit, and a significant crop in Goa, Kerala, Karnataka, and Tamil Nadu. It grows in warm, humid tropical climates (22–35°C) and thrives in deep, well-drained loamy soils with minimal inputs — making it ideal for small and marginal farmers on marginal lands. Tender, unripe jackfruit is an excellent meat substitute — 'kathal ki sabzi' is popular across India and jackfruit is gaining global recognition as a vegan protein. Ripe fruit can be processed into jam, candy, chips, and dried slices for premium markets. Fruit borer (Diaphania caesalis) is the main pest — spray carbaryl at first sign. Soft rot develops in ripe fruit when bruised — handle carefully during harvest. A mature tree (15+ years) can produce 100–200 fruits per year, each weighing 5–25 kg. Jackfruit processing and export to Western vegan markets is an excellent income opportunity for farmers in southern states.",
-                                        "Kokum": "Kokum (Garcinia indica) is a native tree of the Western Ghats — particularly important in Goa and the Konkan coast of Maharashtra and Karnataka. The dried rind (amshul or kokum) of the ripe fruit is used as a souring agent in Konkani, Malvani, and Goan cuisine — the tropical equivalent of tamarind. Kokum sherbet (aagal) is a traditional summer health drink valued for its anti-inflammatory and digestive properties. Trees begin bearing fruit at 6–8 years and each tree yields 15–20 kg fruit at maturity. The dried rind sells for Rs 300–800/kg depending on quality. Kokum butter extracted from seeds is used in cosmetics, confectionery, and pharmaceuticals — a very high-value secondary product. Kokum has a GI (Geographical Indication) tag for Konkan-origin produce, helping premium pricing. Low-input requirements and multiple revenue streams (rind, juice concentrate, butter) make it an excellent diversification crop.",
-                                        "Tapioca": "Tapioca (cassava, Manihot esculenta) is a tropical root crop of Kerala, grown for fresh consumption and as raw material for sabudana (sago) and starch industries. It grows in almost any well-drained soil, tolerates drought, and requires very few inputs — ideal for small and marginal farmers. Plant stem cuttings (30 cm long) at 75×75 cm or 90×90 cm spacing. Sree Prakashan, H-226, and Sree Visakham are recommended varieties for fresh use; Sree Jaya and Sree Sahya for starch industry. Mosaic disease (ICMV) transmitted by whitefly is the main disease — use virus-free planting material from certified nurseries only. Harvest at 7–9 months for food use and 10–12 months for starch production — over-mature tubers become woody. Kerala's sabudana industry provides excellent market linkage. Cassava starch and bioethanol production are emerging value-addition opportunities with industrial demand.",
-                                        "Wheat": "Wheat is the principal rabi cereal of India's north and central states, sown October–November and harvested March–April. Well-drained loamy soils with pH 6–7.5 and cool growing temperatures (15–20°C) are ideal. Timely sowing (first week of November in North India) gives maximum yield — each week of delay after November 20 reduces yield by 30–35 kg/ha. HD-2967, DBW-17, GW-496, and WH-1105 are proven high-yielding varieties. Irrigation at Crown Root Initiation (CRI at 21 days), tillering, jointing, flowering, and grain-filling stages gives maximum yield. Yellow rust is the most damaging disease — plant rust-resistant varieties and spray propiconazole at first sign. Aphid attack at grain filling reduces yield — spray dimethoate only if population exceeds 5 aphids/tiller. Apply 120 kg/ha urea in three splits, 50 kg/ha DAP, and 33 kg/ha MOP at sowing. Expected yield: 40–55 quintals/ha irrigated.",
-                                        "Off-season Vegetables": "Off-season vegetable cultivation in hill stations (Himachal Pradesh, Uttarakhand, Nilgiris) takes advantage of cool summers when plains are in peak heat. Crops like peas, French beans, broccoli, cauliflower, capsicum, and tomatoes grow April–September in hills, commanding 2–5 times the plains price. Certified seed of improved varieties from IIVR (Varanasi) or PAU (Ludhiana) can triple yields compared to local varieties. The main challenge is transportation from remote hill areas — good road connectivity, post-harvest crates, and cold chain infrastructure are critical for reducing losses. Organized Farmer Producer Organizations (FPOs) help aggregate produce, improve bargaining power, and access distant markets. Government programmes like MIDH (Mission for Integrated Development of Horticulture) provide subsidy for drip irrigation, poly-tunnel protection, and cold storage infrastructure in hill areas.",
-                                        "Vegetables": "Vegetable cultivation is a year-round income source for farmers with access to irrigation. Key vegetables include tomato, brinjal, chilli, okra, cucurbits (cucumber, bitter gourd, bottle gourd), and leafy greens. Vegetables are intensive crops requiring good fertility, regular irrigation, and vigilant pest management. Helicoverpa (fruit borer) on tomato and chilli, jassids on okra, and powdery mildew on cucurbits are the most common problems — use IPM (pheromone traps, Bt sprays, yellow sticky traps) to reduce chemical use and improve residue safety. Protected cultivation (low-cost poly-houses or net-houses) increases yields 3–5x and provides off-season produce at premium prices. Good Agricultural Practices (GAP) and pre-harvest interval (PHI) adherence for pesticides are essential for urban and export market access. Contact your nearest APMC or FPO for market linkage and direct marketing opportunities.",
-                                        "Walnuts": "Walnut orchards in J&K and Himachal Pradesh are established at 10×10 m spacing. The most important decision is variety selection — Kagzi walnut (thin shell, high kernel percentage) commands the best prices. Trees bear at 5–7 years from grafted plants vs. 12–15 years from seedlings. Walnut blight (Xanthomonas arboricola) is managed with copper sprays at bud burst and after flowering. Proper timing of harvest is critical — harvest when the hull begins to split; forced early harvest gives poor quality kernels. Dry in-shell walnuts at ambient temperature to 4–5% moisture before storage. Paper shell and broken kernels have different market grades — always separate and grade before selling. In-shell Kashmiri walnuts fetch premium prices in domestic urban markets and in the UAE and UK. Walnut wood is extremely valuable — a mature tree trunk can fetch Rs 50,000–2,00,000 when the orchard is replanted.",
-                                        "Citrus Fruits": "Citrus crops (mandarins, lemons, limes, grapefruit) are grown across tropical and subtropical India. They need a distinct dry season for flowering stimulation followed by irrigation for fruit development. Deep, well-drained sandy loam soils with pH 5.5–6.5 are ideal. Citrus greening disease (Huanglongbing/HLB), transmitted by Asian citrus psyllid (Diaphorina citri), is the most devastating disease worldwide — there is no cure, so control psyllid with imidacloprid sprays and remove and destroy infected trees immediately. Phytophthora foot rot (gummosis) is managed by keeping the trunk base dry and applying Bordeaux paste. Apply foliar micronutrient sprays (zinc, manganese, boron) to correct deficiencies and improve fruit quality. Nagpur mandarin, Coorg mandarin, and Kagzi lime are leading commercial varieties. Cold storage at 5–10°C extends marketable life by 4–6 weeks for export.",
-                                        "Sweet Orange": "Sweet orange is grown across Maharashtra, Karnataka, Andhra Pradesh, and the Northeastern states. The crop needs a dry period (November–December) for flowering trigger followed by good soil moisture for fruit development. Popular varieties include Jaffa, Hamlin (juice), and Navel for table consumption. Canker (Xanthomonas citri) causes scabby lesions on leaves and fruit — control with copper sprays (Bordeaux mixture or copper oxychloride) every 30 days on new flushes. Citrus leafminer creates silvery mines on tender leaves — spray neem or abamectin on all new flushes. Fruit fly damage at ripening is managed with protein bait sprays (malathion + hydrolysed protein). Space trees at 6×6 m and provide micronutrients (zinc sulfate, boron) in foliar sprays. Apply 600 g N, 200 g P₂O₅, and 600 g K₂O per bearing tree annually. Orange juice processing provides alternative market during glut periods.",
-                                        "Pears": "Pears are grown in J&K (Sopore, Kulgam), Himachal Pradesh, and Uttarakhand. They need more chilling than apples (800–1500 hours below 7°C). Bartlett (William), Patharnakh, and Beurre Bosc are commercially important varieties. Fire blight (Erwinia amylovora) is an extremely destructive bacterial disease — prune infected wood 60 cm below visible infection using sterilized tools and dispose infected material away from the orchard. Pears must be harvested before full maturity and ripened off-tree (1–2 weeks at 15–20°C) — on-tree ripening causes core breakdown. CA (Controlled Atmosphere) storage at −1°C and 90–95% RH keeps pears marketable for 3–5 months, allowing better price realization. Pear orchards need annual dormant pruning to maintain light penetration and fruitwood renewal. Pear wine and pear juice provide alternative income when fresh market prices are low.",
-                                        "Oranges": "Sweet oranges require a warm tropical or subtropical climate with a distinct dry season for uniform flowering. Mandarin types (Nagpur mandarin, Coorg mandarin) are the most important in India, while navel oranges are grown in cooler areas. Citrus Tristeza Virus (CTV) has devastated sweet orange orchards worldwide — always plant certified CTV-tolerant rootstock–variety combinations. Greening disease (HLB) is the biggest emerging threat — monitor for yellowing of leaves on one side of the tree and asymmetric blotching, which are early symptoms. Organic mulching (paddy straw, dry leaves) at the base conserves moisture and maintains soil health. Orange processing (juice, squash, marmalade, essential oil from peel) provides excellent value addition opportunity. National Horticulture Board (NHB) provides post-harvest management subsidies for packhouses and cold storage.",
-                                        "Arecanut": "Arecanut palm requires deep planting of 9-month-old, healthy, vigorous seedlings in pits (90×90×90 cm) filled with top soil mixed with FYM. Irrigation is critical — arecanut cannot tolerate drought and needs 600–800 mm irrigation through drip or flood methods where rainfall is insufficient. Koleroga (mahali) disease during monsoon causes heavy fruit drop — commence Bordeaux mixture (1%) spray well before the onset of the southwest monsoon. Bud rot (Phytophthora) is managed by curettage of infected crown tissue and copper paste application. Apply 200 g N, 80 g P₂O₅, and 280 g K₂O per palm per year with 10–15 kg compost. Intercropping with cocoa, black pepper, or banana under arecanut maximises land use and provides steady income during the non-bearing period. Betel nut chewing is a major cultural practice in India — domestic demand remains consistently strong.",
-                                        "Rubber": "Rubber plantation is a long-term investment — trees yield for 25–35 years after the initial non-bearing period of 5–7 years. Rubber Board of India provides subsidy for new planting, replanting, and replanting with disease-resistant clones. Apply Rubber Board fertilizer mixture twice a year — April–May and September–October. Tapping should be done carefully — excessive tapping or bark damage reduces the tree's productive life. Panel dryness (caused by over-tapping and Phytophthora) can be reversed by bark renewal therapy and Ethephon stimulation at proper dosage. Rainfall-induced leaf fall (Phytophthora) is controlled with Aliette or phosphonate fungicides. Smallholder rubber farmers can benefit from RSS sheet processing — grade 3 and 4 sheets are discounted heavily; target to produce RSS-1 through proper smoking and drying. Rubber price fluctuations are significant — crop diversification with pepper, cocoa, or nutmeg in rubber gardens provides income stability.",
-                                        "Arhar (Pigeon Pea)": "Pigeon pea (tur/arhar) is the most important kharif pulse of peninsular India, valued for its drought tolerance and nitrogen-fixing ability. It grows in well-drained, light to medium soils and is tolerant of poor soils where other crops fail. Wilt (Fusarium udum) and sterility mosaic disease (transmitted by eriophyid mite) are the most serious threats — plant resistant varieties like Asha, BSMR-736, or ICPL-87 which are both wilt and SMD resistant. Pod borer (Helicoverpa armigera) is the main pest — use 5 pheromone traps per hectare for monitoring; spray HaNPV bio-insecticide at first infestation. Inoculate seeds with Rhizobium culture and apply only 20 kg/ha starter nitrogen — excess nitrogen suppresses nodulation. Intercropping pigeon pea 1:2 with sorghum, cotton, or maize is a highly recommended risk-reduction strategy. Medium-duration varieties (140–160 days) fit well in double cropping systems. Expected yield: 12–20 quintals/ha.",
-                                        "Pineapple": "Pineapple grows commercially in Meghalaya, Assam, West Bengal, Kerala, Karnataka, and Andhra Pradesh. The crop grows from planting material (suckers, slips, or crowns) at 30×30 cm double-row planting — use slips from productive plants only. Apply mulch (dry grass or black polythene) to conserve moisture and suppress weeds. Ethephon (Ethrel) treatment (25 ml/10 L water, poured into crown) is used to induce uniform flowering and plan harvest — apply 6 months before targeted harvest date. Top rot (Phytophthora) is managed by Ridomil drench into the crown. Mealybug wilt complex is managed by chlorpyrifos soil drench. Apply 500 g nitrogen, 250 g phosphorus, and 500 g potassium per 100 plants annually. Kew variety is preferred for canning and export; Queen for fresh market. Expected yield: 35–50 tonnes/ha first crop; 25–40 tonnes/ha ratoon crop.",
-                                        "Maize": "Maize is a versatile high-yield crop sown in kharif (June–July) and increasingly in the rabi season in southern India. Use high-yielding hybrid seed (18–22 kg/ha) from Pioneer, Syngenta, or Mahyco — seed quality is the most critical investment. Fall Armyworm (FAW), which has spread pan-India since 2018, is the most dangerous pest — inspect whorl leaves for feeding holes with 'window pane' damage pattern, and spray emamectin benzoate at first detection. Turcicum leaf blight and downy mildew are managed by resistant hybrids. Apply 180 kg/ha nitrogen in three equal splits (sowing, knee-high, tasseling), 60 kg/ha phosphorus, and 40 kg/ha potassium. Maize grain has excellent market demand from poultry, starch, and ethanol industries — futures trading on NCDEX helps in price discovery. Expected yield: 60–90 quintals/ha irrigated.",
-                                        "Rice": "Rice is India's most critical food security crop. Use certified seed of recommended variety for your district — seed quality contributes 30–40% to final yield. Always soak seeds for 24 hours and incubate for 48 hours in a wet gunny bag before nursery sowing. For System of Rice Intensification (SRI), transplant 10–12 day old seedlings at 25×25 cm spacing with single seedling per hill — this can give 50–80% higher yield than conventional transplanting. Monitor fields for blast (grey elliptical lesions on leaves) and spray tricyclazole at early sign. Brown Planthopper (BPH) causes 'hopper burn' — install light traps, conserve natural enemies (spiders, mirid bugs), and use imidacloprid spray only at ETL of 10 hoppers per hill. Alternate Wetting and Drying (AWD) saves 30% water without yield loss — install a perforated pipe in the field to monitor water level.",
-                                        "Vegetables": "Mixed vegetable cultivation provides year-round income, especially for farmers with 0.5–2 acre plots near urban centres. Key principles for profitable vegetable farming: use hybrid seeds of recommended varieties (always check expiry date); maintain plant health with drip irrigation and fertigation; follow strict spray schedule using only approved pesticides with adequate Pre-Harvest Interval (PHI); keep a field diary for compliance audits. Tomato, chilli, brinjal, okra, and cucurbits are the most remunerative crops. Grow nursery under protected conditions (insect-proof net or poly-tunnel) to get disease-free transplants. Direct seeding is cheaper but transplanting gives 2–3 weeks' earliness which earns premium prices. Connect with a contract farming company (ITC e-Choupal, Ninjacart, AgroStar) for direct market access and price stability."
-                                    };
-
-                                    const lookupKey = `${stateName}|${cropName}`;
-                                    // Try state-specific first, then general, then a cleaned-up name match
-                                    let description = stateSpecificCrops[lookupKey]
-                                        || generalCropInfo[cropName]
-                                        || generalCropInfo[cropName.replace(/\s*\(.*\)/, '').trim()]
-                                        || `${cropName} is an important crop of ${stateName}. It plays a key role in the agricultural economy of the region. Farmers are advised to use certified seeds of locally recommended varieties, follow Integrated Pest Management (IPM) practices, and consult their nearest Krishi Vigyan Kendra (KVK) or State Agriculture Department for region-specific guidance on sowing time, fertilizer dose, and disease management.`;
-                                    
-                                    largeImg.src = largeUrl;
-                                    detailText.innerHTML = `<h3 style="color:#fff; font-size:1.8rem; font-family:'Space Grotesk'; margin-bottom:0.5rem;">${cropName}</h3><p>${description}</p>`;
-                                    
-                                    detailView.style.display = "flex";
-                                    tooltip.style.display = "none";
-                                });
-                            });
-
-                        } else {
-                            // Make the details card blank (opacity = 0)
-                            document.querySelector(".details-header").style.opacity = 0;
-                            document.querySelector(".details-grid").style.display = "none";
-                            document.querySelector(".plant-list-container").style.display = "none";
-                        }
-
-                        // Hide tooltip
-                        tooltip.style.display = "none";
+                        /* State not yet added — show a friendly message */
+                        document.getElementById("weather-default").style.display = "none";
+                        document.getElementById("weather-live").style.display    = "flex";
+                        document.getElementById("weather-live").style.flexDirection = "column";
+                        document.getElementById("wc-loading").style.display      = "none";
+                        document.getElementById("wc-error").style.display        = "none";
+                        document.getElementById("wc-state-name").textContent     = stateName;
+                        document.getElementById("wc-city-name").textContent      = "⏳ Coming soon — being added!";
+                        document.getElementById("wc-temp").textContent           = "—";
+                        document.getElementById("wc-feels").textContent          = "";
+                        document.getElementById("wc-condition").textContent      = "Weather data for this state will be available shortly.";
+                        document.getElementById("wc-icon").textContent           = "🗺️";
+                        document.getElementById("wc-humidity").textContent       = "—";
+                        document.getElementById("wc-wind").textContent           = "—";
+                        document.getElementById("wc-visibility").textContent     = "—";
+                        document.getElementById("wc-pressure").textContent       = "—";
+                        document.getElementById("wc-sunrise").textContent        = "—";
+                        document.getElementById("wc-sunset").textContent         = "—";
                     }
                 });
-            });
-
-            // Resetting card state on clicking container background (if clicked outside map paths)
-            const mapContainer = document.querySelector(".map-visual-box");
-            mapContainer.addEventListener("mouseleave", function() {
-                if (activeClickedState) return; // Keep map zoomed in and do not reset details card
-                paths.forEach(p => p.classList.remove("active-state"));
-                tooltip.style.display = "none";
-                
-                // Return to National defaults
-                setTimeout(() => {
-                    cardStateName.innerHTML = defaultState.name;
-                    cardCrops.innerText = defaultState.crops;
-                    cardSoil.innerText = defaultState.soil;
-                    cardDiseases.innerText = defaultState.disease;
-                    cardHealthVal.innerText = defaultState.health + "%";
-                    cardHealthFill.style.width = defaultState.health + "%";
-                }, 150);
             });
 
             /* Andaman and Nicobar Islands Clickable Helper Delegation */
@@ -1767,11 +1425,4 @@
         });
     </script>
 </body>
-
 </html>
-
-
-
-
-
-

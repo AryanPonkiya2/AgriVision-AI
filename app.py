@@ -174,6 +174,15 @@ def team():
 def map_page():
     return render_template('map.html')
 
+@app.route('/export-map')
+def export_map_page():
+    return render_template('export.html')
+
+@app.route('/weather-map')
+def weather_map_page():
+    return render_template('weather.html')
+
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -209,5 +218,10 @@ def upload():
     return render_template('upload.html')
 
 if __name__ == '__main__':
-    print("Starting AgriVison AI Web Application...")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    print("Starting AgriVision AI Web Application...")
+    app.run(
+        debug=True,
+        host='0.0.0.0',
+        port=5000,
+        use_reloader=False
+    )
