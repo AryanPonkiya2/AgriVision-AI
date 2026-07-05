@@ -1297,7 +1297,7 @@
             async function fetchWeather(city, stateName) {
                 showLoading();
                 document.getElementById("wc-state-name").textContent = stateName;
-                document.getElementById("wc-city-name").textContent  = "📍 " + city;
+
 
                 try {
                     const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
