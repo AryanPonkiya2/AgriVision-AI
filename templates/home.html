@@ -14,7 +14,8 @@
 <body>
 
     <nav class="animate-up">
-        <a href="{{ url_for('home') }}" class="logo agrivision-logo-link" style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
+        <a href="{{ url_for('home') }}" class="logo agrivision-logo-link"
+            style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
             <span class="logo-img-wrapper">
                 <img src="{{ url_for('static', filename='Main_Logo.png') }}" alt="AgriVision Logo" class="logo-img">
             </span>
@@ -28,25 +29,88 @@
             <li><a href="{{ url_for('weather_map_page') }}">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
-        <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
+        {% if current_user %}
+        <div class="nav-user-area">
+            <div class="nav-user-dropdown">
+                <div class="nav-user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+                <div class="nav-dropdown-menu">
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.7;">
+                        <span>👤</span> {{ current_user.first_name }} {{ current_user.last_name }}
+                    </div>
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.5; font-size:0.78rem;">
+                        <span>📧</span> {{ current_user.email }}
+                    </div>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('upload') }}" class="nav-dropdown-item"><span>🔬</span> Diagnose</a>
+                    <a href="{{ url_for('map_page') }}" class="nav-dropdown-item"><span>🗺️</span> Crop Map</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="nav-dropdown-item logout"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="nav-user-area">
+            <a href="{{ url_for('login') }}" class="nav-links" style="text-decoration:none;"><span style="color:var(--text-light);font-weight:600;font-size:1.05rem;transition:color 0.3s ease;">Login</span></a>
+            <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+        </div>
+        {% endif %}
     </nav>
 
     <main>
-        <section class="hero animate-up delay-1">
-            <h1>Identifiy Your Crops with <br><span class="glow-text">AgriVision</span></h1>
-            <p>Ensure your agricultural yield reaches its maximum potential. Upload a photo of any plant leaf and
-                instantly diagnose over 38 distinct diseases with up to 95% accuracy.</p>
-            <a href="{{ url_for('upload') }}" class="btn-primary"
-                style="padding: 1.2rem 3rem; font-size: 1.2rem; margin-top: 1rem;">Start Free Diagnosis</a>
+        <!-- Hero Text Section — transparent so falling leaves show through -->
+        <section class="hero-text-section animate-up delay-1">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                <span>AI-Powered Agricultural Intelligence</span>
+            </div>
+            <h1 class="hero-main-title">Identify Your Crops with <br><span class="glow-text">AgriVision</span></h1>
+            <p class="hero-main-desc">
+                Ensure your agricultural yield reaches its maximum potential. Upload a photo of any plant leaf and
+                instantly diagnose over 38 distinct diseases with up to 95% accuracy.
+            </p>
+            <div class="hero-highlights">
+                <div class="highlight-item">
+                    <span class="highlight-icon">⚡</span>
+                    <span>Instant AI Pathogen Analysis</span>
+                </div>
+                <div class="highlight-item">
+                    <span class="highlight-icon">🛡️</span>
+                    <span>38+ Disease Classifications</span>
+                </div>
+                <div class="highlight-item">
+                    <span class="highlight-icon">🌿</span>
+                    <span>Scientific Treatment Care Plans</span>
+                </div>
+            </div>
+        </section>
 
-            <div class="stats delay-2">
+        <!-- Action Banner — background image ONLY here -->
+        <div class="action-img-banner animate-up delay-2">
+            <div class="action-img-overlay"></div>
+            <div class="action-img-inner">
+                <div class="hero-action-row">
+                    <div class="hero-action-text-left">
+                        <div class="action-highlight-pill">⚡ Real-Time Leaf Scanner & Pathogen Analysis</div>
+                        <p class="action-subtext">Upload plant leaf photos to detect 38+ diseases instantly with AI
+                            precision & treatment advice.</p>
+                    </div>
+                    <a href="{{ url_for('upload') }}" class="btn-primary btn-left-aligned"
+                        style="padding: 1.2rem 2.8rem; font-size: 1.15rem; white-space: nowrap;">Start Free Diagnosis
+                        →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section — transparent so falling leaves show through -->
+        <section class="stats-outer animate-up delay-3">
+            <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number">38+</div>
                     <div class="stat-label">Disease Classes</div>
                 </div>
                 <div class="stat-card delay-3">
                     <div class="stat-number glow-text">95%</div>
-                    <div class="stat-label">Model Accuracy</div>
+                    <div class="stat-label">AI Engine Accuracy</div>
                 </div>
                 <div class="stat-card delay-4">
                     <div class="stat-number">2-5s</div>
@@ -73,10 +137,11 @@
                         <li class="feature-item">
                             <div class="feature-icon">🧠</div>
                             <div>
-                                <h3 style="color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.3rem;">Processing</h3>
-                                <p style="color: var(--text-light); line-height: 1.6;">Our Flask backend resizes the
-                                    image to 224x224 and feeds it through our fine-tuned MobileNetV2 Transfer Learning
-                                    Model.</p>
+                                <h3 style="color: var(--text-main); margin-bottom: 0.5rem; font-size: 1.3rem;">AI
+                                    Processing</h3>
+                                <p style="color: var(--text-light); line-height: 1.6;">Our Flask backend encodes the
+                                    uploaded leaf image to Base64 and dispatches it securely to the Plant.id AI API
+                                    for identification and health analysis.</p>
                             </div>
                         </li>
                         <li class="feature-item">
@@ -94,8 +159,9 @@
                 <div
                     style="background: rgba(16, 185, 129, 0.05); padding: 3rem; border-radius: 32px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: inset 0 0 50px rgba(16, 185, 129, 0.05);">
                     <h3 style="font-size: 2rem; color: var(--text-main); margin-bottom: 1.5rem;">Supported </h3>
-                    <h3 style="color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; font-size: 1.1rem;" >Mostly all types of plants and fruits :</h3>
-                    
+                    <h3 style="color: var(--text-light); line-height: 1.8; margin-bottom: 2rem; font-size: 1.1rem;">
+                        Mostly all types of plants and fruits :</h3>
+
                     <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
                         <span
                             style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 20px; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1);">🍎
@@ -139,6 +205,40 @@
                         <span
                             style="background: rgba(255,255,255,0.05); padding: 0.5rem 1rem; border-radius: 20px; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1);">🌿
                             Squash</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Visual Intelligence Showcase -->
+        <section class="ui-showcase-section ui-showcase-home animate-up delay-4">
+            <div class="ui-showcase-header">
+                <div class="ui-showcase-badge">🌿 Visual Field Intelligence</div>
+                <h2 class="ui-showcase-title">Next-Gen Agricultural <span class="glow-text">Ecosystems</span></h2>
+                <p class="ui-showcase-desc">Explore how AgriVision's computer vision algorithms combine satellite, micro-climate, and leaf-level diagnostics to safeguard commercial harvests.</p>
+            </div>
+            <div class="ui-showcase-grid">
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/12.png') }}" alt="Precision Terraced Farming & Crop Diversification" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag emerald">🌾 Diverse Crop Ecosystems</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Precision Terraced Farming &amp; Biodiversity</h3>
+                        <p>Integrated multi-crop intelligence managing varied foliage health, soil moisture retention, and vegetative development stages across diverse terraced landscapes.</p>
+                    </div>
+                </div>
+
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/2.png') }}" alt="Smart Row Cultivation & Soil Health Monitoring" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag cyan">🌱 Precision Agronomy</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Smart Row Cultivation &amp; Soil Health</h3>
+                        <p>High-resolution field scouting and AI-driven pathogen scanning deployed directly along commercial crop furrows to identify leaf symptoms before widespread contagion.</p>
                     </div>
                 </div>
             </div>

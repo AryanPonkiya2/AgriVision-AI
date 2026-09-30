@@ -1,0 +1,10 @@
+[
+  {
+    "id": "09c31bcb-e23",
+    "first_name": "Test",
+    "last_name": "User",
+    "email": "test@agrivision.com",
+    "password_hash": "scrypt:32768:8:1$12Q4QQbNKy95M1Hm$b0fe5f448e9ab9c39f0c58f0b0c18e6fc8b58f605b983029e7ed51fd8976728bb933a92db34145f348081d6d8af306e49d2b7e72f8ba1fef82d47792729fbd1a",
+    "created_at": "2026-09-28 03:34:06"
+  }
+]

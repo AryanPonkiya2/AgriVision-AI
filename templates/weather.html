@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Map - AgriVision</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3.0">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet">
@@ -684,10 +684,139 @@
             stroke-width: 2.5px !important;
             filter: drop-shadow(0 0 15px rgba(2, 132, 199, 0.9)) !important;
         }
+
+        /* ─── Dynamic Weather Background Themes ─── */
+        body.weather-theme-rain {
+            background-color: #060c16 !important;
+            background: 
+                radial-gradient(circle at 50% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 70%),
+                linear-gradient(180deg, #050a12 0%, #0c1626 50%, #040810 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        body.weather-theme-thunder {
+            background-color: #0c0818 !important;
+            background: 
+                radial-gradient(circle at 40% 30%, rgba(88, 28, 135, 0.4) 0%, transparent 70%),
+                linear-gradient(180deg, #0a0414 0%, #150d2a 50%, #05020c 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        body.weather-theme-sunny {
+            background-color: #0f1c2e !important;
+            background: 
+                radial-gradient(circle at 75% 15%, rgba(245, 158, 11, 0.35) 0%, rgba(251, 191, 36, 0.12) 40%, transparent 70%),
+                radial-gradient(circle at 25% 80%, rgba(56, 189, 248, 0.15) 0%, transparent 60%),
+                linear-gradient(180deg, #091a30 0%, #0d284a 50%, #071324 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        body.weather-theme-cloudy {
+            background-color: #0a111e !important;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(71, 85, 105, 0.3) 0%, transparent 65%),
+                linear-gradient(180deg, #070d18 0%, #111d30 50%, #050912 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        body.weather-theme-snow {
+            background-color: #061826 !important;
+            background: 
+                radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.25) 0%, transparent 65%),
+                linear-gradient(180deg, #04121d 0%, #0d2a42 50%, #030d17 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        body.weather-theme-mist {
+            background-color: #0c1420 !important;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.2) 0%, transparent 75%),
+                linear-gradient(180deg, #070d16 0%, #152233 50%, #05080e 100%) !important;
+            transition: background 1.2s ease-in-out;
+        }
+
+        /* Weather Effect Overlay Container */
+        .weather-effect-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Rain Drop animation */
+        .rain-drop {
+            position: absolute;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(56, 189, 248, 0.65) 70%, rgba(255, 255, 255, 0.9) 100%);
+            width: 1.5px;
+            height: 35px;
+            opacity: 0.7;
+            animation: dropFall linear infinite;
+        }
+
+        @keyframes dropFall {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            30% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(105vh);
+                opacity: 0.2;
+            }
+        }
+
+        /* Sun Ray Beam & Sparkles */
+        .sun-ray-beam {
+            position: absolute;
+            top: -100px;
+            right: 5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.32) 0%, rgba(245, 158, 11, 0.12) 40%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+            animation: sunPulse 6s ease-in-out infinite alternate;
+        }
+
+        @keyframes sunPulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+            100% { transform: scale(1.15) rotate(10deg); opacity: 1; }
+        }
+
+        /* Snowflake animation */
+        .snowflake {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.2rem;
+            user-select: none;
+            animation: snowFall linear infinite;
+        }
+
+        @keyframes snowFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(105vh) rotate(360deg);
+                opacity: 0.2;
+            }
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="weather-effect-overlay" class="weather-effect-overlay"></div>
 
     <!-- Ambient Navy Blue Clouds Background -->
     <div class="clouds-container">
@@ -743,14 +872,34 @@
             <li><a href="{{ url_for('weather_map_page') }}" class="active">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
-        <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
+        {% if current_user %}
+        <div class="nav-user-area">
+            <div class="nav-user-dropdown">
+                <div class="nav-user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+                <div class="nav-dropdown-menu">
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.7;">
+                        <span>👤</span> {{ current_user.first_name }} {{ current_user.last_name }}
+                    </div>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('upload') }}" class="nav-dropdown-item"><span>🔬</span> Diagnose</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="nav-dropdown-item logout"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="nav-user-area">
+            <a href="{{ url_for('login') }}" style="text-decoration:none;"><span style="color:var(--text-light);font-weight:600;font-size:1.05rem;">Login</span></a>
+            <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+        </div>
+        {% endif %}
     </nav>
 
     <main class="map-section">
         <div style="text-align: center; max-width: 800px; margin: 0 auto 1rem;" class="animate-up delay-1">
             <h1 class="section-title" style="margin-bottom: 1rem; font-size: 4rem;">India <span class="glow-text">Weather Map</span></h1>
             <p style="color: var(--text-light); font-size: 1.25rem; line-height: 1.7;">
-                Hover and Click any state to view <strong style="color:var(--primary)">live weather conditions</strong> — temperature, humidity, wind, and sky status — updated in real time from OpenWeatherMap.
+                Click or hover over any state to view <strong style="color:var(--primary)">live weather conditions</strong> — temperature, humidity, wind, and sky status — updated in real time from OpenWeatherMap.
             </p>
         </div>
 
@@ -955,7 +1104,7 @@
 	</g>
 </svg>
                 <div class="weather-instructions-overlay">
-                    <span>🌤️</span> Hover and click a state to view live weather
+                    <span>🌤️</span> Hover or click a state to view live weather
                 </div>
             </div>
 
@@ -965,7 +1114,7 @@
                 <div class="weather-default" id="weather-default">
                     <div class="weather-globe-icon">🌏</div>
                     <h2 class="weather-card-title">India Weather Map</h2>
-                    <p class="weather-card-subtitle">Hover over and click any state to fetch live weather conditions from across India.</p>
+                    <p class="weather-card-subtitle">Hover over or click any state to fetch live weather conditions from across India.</p>
                 </div>
 
                 <!-- Live Weather Data (hidden until a state is clicked) -->
@@ -1039,12 +1188,49 @@
                 </div>
             </div>
         </div>
+
+        <!-- ── Agro-Meteorology & Micro-Climate Showcase ──────── -->
+        <section class="ui-showcase-section ui-showcase-weather animate-up delay-3" style="max-width: 1300px; padding: 0;">
+            <div class="ui-showcase-header">
+                <div class="ui-showcase-badge cyan">⛅ Agro-Meteorology &amp; Climate Resilience</div>
+                <h2 class="ui-showcase-title">Hydrological Basins &amp; <span class="glow-text">Micro-Climates</span></h2>
+                <p class="ui-showcase-desc">Tracking localized humidity, solar radiation, and precipitation cycles to anticipate blight outbreaks and optimize precision irrigation schedules.</p>
+            </div>
+            <div class="ui-showcase-grid">
+                <div class="ui-visual-card theme-cyan">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/3.png') }}" alt="River Basins & Hydrological Dynamics" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag cyan">💧 Watershed &amp; River Basins</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>River Basins &amp; Moisture Dynamics</h3>
+                        <p>Riparian corridors and perennial river valleys maintain vital soil moisture reserves. Monitoring ambient river basin humidity helps forecast early fungal spore propagation such as downy mildew and leaf blight.</p>
+                    </div>
+                </div>
+
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/11.png') }}" alt="Solar Radiation & Micro-Climatic Variance" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag emerald">☀️ Solar Radiation &amp; Thermal Belts</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Solar Radiation &amp; Thermal Belts</h3>
+                        <p>Daily sunlight duration and cloud coverage variations determine crop transpiration rates. Live weather analytics assist growers in preventing heat stress, sunburn on fruits, and moisture-induced leaf spotting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- Container for crop hazard alerts -->
+    <div id="crop-alerts-container" class="crop-alerts-container"></div>
 
     <div class="map-tooltip" id="tooltip"></div>
 
     <footer style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;">
-        <p>© 2026 AgriVision </p>
+        <p>© 2026 AgriVision. Powered by <a href="https://wttr.in" target="_blank" style="color:var(--primary); text-decoration:none;">wttr.in</a> Weather Data.</p>
     </footer>
 
     <!-- Disabled leaves animation for the Weather Map page -->
@@ -1206,6 +1392,209 @@
         /* Fix map-container to use same grid as before */
         .map-container { display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; align-items: start; margin-top: 3rem; }
         @media (max-width: 1024px) { .map-container { grid-template-columns: 1fr; gap: 3rem; } }
+
+        /* ═══ CROP HAZARD & WEATHER ALERTS ═══ */
+        .crop-alerts-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 420px;
+            width: calc(100% - 4rem);
+            pointer-events: none;
+        }
+
+        .crop-alert-toast {
+            pointer-events: auto;
+            background: rgba(7, 11, 25, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                        opacity 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .crop-alert-toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .crop-alert-toast.severity-high {
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            box-shadow: 0 15px 35px rgba(239, 68, 68, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .crop-alert-toast.severity-moderate {
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .crop-alert-toast.severity-low {
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 15px 35px rgba(56, 189, 248, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .crop-alert-toast.severity-optimal {
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .crop-alert-glow-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+        }
+
+        .crop-alert-toast.severity-high .crop-alert-glow-bar {
+            background: linear-gradient(180deg, #ef4444, #b91c1c);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+        }
+
+        .crop-alert-toast.severity-moderate .crop-alert-glow-bar {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+        }
+
+        .crop-alert-toast.severity-low .crop-alert-glow-bar {
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+        }
+
+        .crop-alert-toast.severity-optimal .crop-alert-glow-bar {
+            background: linear-gradient(180deg, #10b981, #059669);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+        }
+
+        .crop-alert-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.2rem;
+            line-height: 1;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .crop-alert-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .crop-alert-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-right: 1.5rem;
+        }
+
+        .crop-alert-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+        }
+
+        .crop-alert-subtitle {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 0.1rem;
+        }
+
+        .crop-alert-badge {
+            padding: 0.25rem 0.65rem;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-high .crop-alert-badge {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .severity-moderate .crop-alert-badge {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .severity-low .crop-alert-badge {
+            background: rgba(56, 189, 248, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        .severity-optimal .crop-alert-badge {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .crop-alert-risk {
+            font-size: 0.92rem;
+            color: #e2e8f0;
+            line-height: 1.45;
+        }
+
+        .crop-alert-action {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .crop-alert-action-title {
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .severity-high .crop-alert-action-title { color: #f87171; }
+        .severity-moderate .crop-alert-action-title { color: #fbbf24; }
+        .severity-low .crop-alert-action-title { color: #38bdf8; }
+        .severity-optimal .crop-alert-action-title { color: #34d399; }
+
+        @keyframes alertPulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .crop-alert-pulse-icon {
+            animation: alertPulse 2s infinite ease-in-out;
+            display: inline-block;
+        }
     </style>
 
     <script>
@@ -1297,7 +1686,7 @@
             async function fetchWeather(city, stateName) {
                 showLoading();
                 document.getElementById("wc-state-name").textContent = stateName;
-
+                document.getElementById("wc-city-name").textContent  = "📍 " + city;
 
                 try {
                     const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
@@ -1333,7 +1722,21 @@
                     document.getElementById("wc-sunrise").textContent    = sunrise;
                     document.getElementById("wc-sunset").textContent     = sunset;
 
+                    // Update atmospheric background dynamically according to current weather
+                    updateWeatherBackground(desc, code);
+
                     hideLoading();
+
+                    // Check crop hazards and trigger alerts
+                    checkCropHazards(
+                        parseFloat(tempC),
+                        parseFloat(current.windspeedKmph),
+                        parseFloat(current.humidity),
+                        desc,
+                        code,
+                        city,
+                        stateName
+                    );
 
                 } catch (err) {
                     console.error("Weather fetch error:", err);
@@ -1341,7 +1744,309 @@
                 }
             }
 
+            /* ─── Dynamic Weather Background Updater ─── */
+            function updateWeatherBackground(desc, code) {
+                const body = document.body;
+                let overlay = document.getElementById("weather-effect-overlay");
+                if (!overlay) {
+                    overlay = document.createElement("div");
+                    overlay.id = "weather-effect-overlay";
+                    overlay.className = "weather-effect-overlay";
+                    body.appendChild(overlay);
+                }
+
+                const descLower = (desc || "").toLowerCase();
+
+                // Remove existing theme classes
+                body.classList.remove(
+                    "weather-theme-rain",
+                    "weather-theme-sunny",
+                    "weather-theme-cloudy",
+                    "weather-theme-thunder",
+                    "weather-theme-snow",
+                    "weather-theme-mist"
+                );
+
+                // Clear current overlay animations
+                overlay.innerHTML = "";
+
+                // 1. Rain / Drizzle / Downpour / Heavy Shower
+                if (descLower.includes("rain") || descLower.includes("drizzle") || descLower.includes("shower") || descLower.includes("downpour") || [263, 266, 293, 296, 299, 302, 305, 308, 353, 356, 359].includes(code)) {
+                    body.classList.add("weather-theme-rain");
+                    createRainEffect(overlay, false);
+                }
+                // 2. Thunderstorm / Storm / Squall
+                else if (descLower.includes("thunder") || descLower.includes("storm") || descLower.includes("squall") || [200, 386, 389, 392, 395].includes(code)) {
+                    body.classList.add("weather-theme-thunder");
+                    createRainEffect(overlay, true);
+                }
+                // 3. Sunny / Clear / Fair
+                else if (descLower.includes("sun") || descLower.includes("clear") || descLower.includes("fair") || code === 113) {
+                    body.classList.add("weather-theme-sunny");
+                    createSunburstEffect(overlay);
+                }
+                // 4. Snow / Sleet / Ice / Freezing
+                else if (descLower.includes("snow") || descLower.includes("sleet") || descLower.includes("blizzard") || descLower.includes("ice") || descLower.includes("flurry") || [179, 227, 230, 323, 326, 329, 332, 335, 338, 368, 371].includes(code)) {
+                    body.classList.add("weather-theme-snow");
+                    createSnowEffect(overlay);
+                }
+                // 5. Mist / Fog / Haze
+                else if (descLower.includes("mist") || descLower.includes("fog") || descLower.includes("haze") || [143, 248, 260].includes(code)) {
+                    body.classList.add("weather-theme-mist");
+                    createMistEffect(overlay);
+                }
+                // 6. Cloudy / Overcast (Default)
+                else {
+                    body.classList.add("weather-theme-cloudy");
+                    createCloudyEffect(overlay);
+                }
+            }
+
+            function createRainEffect(container, isThunder = false) {
+                const dropCount = isThunder ? 85 : 55;
+                for (let i = 0; i < dropCount; i++) {
+                    const drop = document.createElement("div");
+                    drop.className = "rain-drop";
+                    drop.style.left = (Math.random() * 100) + "%";
+                    drop.style.animationDuration = (0.45 + Math.random() * 0.45) + "s";
+                    drop.style.animationDelay = (Math.random() * 2) + "s";
+                    drop.style.height = (25 + Math.random() * 25) + "px";
+                    drop.style.opacity = (0.4 + Math.random() * 0.5).toString();
+                    container.appendChild(drop);
+                }
+            }
+
+            function createSunburstEffect(container) {
+                const sunGlow = document.createElement("div");
+                sunGlow.className = "sun-ray-beam";
+                container.appendChild(sunGlow);
+
+                for (let i = 0; i < 20; i++) {
+                    const spark = document.createElement("div");
+                    spark.style.position = "absolute";
+                    spark.style.left = (Math.random() * 100) + "%";
+                    spark.style.top = (Math.random() * 100) + "%";
+                    spark.style.width = (3 + Math.random() * 6) + "px";
+                    spark.style.height = spark.style.width;
+                    spark.style.background = "rgba(251, 191, 36, 0.75)";
+                    spark.style.borderRadius = "50%";
+                    spark.style.filter = "blur(1px)";
+                    spark.style.animation = `sunPulse ${3 + Math.random() * 4}s ease-in-out infinite alternate`;
+                    spark.style.animationDelay = (Math.random() * 3) + "s";
+                    container.appendChild(spark);
+                }
+            }
+
+            function createSnowEffect(container) {
+                const flakes = ["❄", "❅", "✦", "•"];
+                for (let i = 0; i < 40; i++) {
+                    const flake = document.createElement("div");
+                    flake.className = "snowflake";
+                    flake.textContent = flakes[Math.floor(Math.random() * flakes.length)];
+                    flake.style.left = (Math.random() * 100) + "%";
+                    flake.style.animationDuration = (3 + Math.random() * 5) + "s";
+                    flake.style.animationDelay = (Math.random() * 4) + "s";
+                    flake.style.fontSize = (0.8 + Math.random() * 1.2) + "rem";
+                    container.appendChild(flake);
+                }
+            }
+
+            function createMistEffect(container) {
+                for (let i = 0; i < 3; i++) {
+                    const mist = document.createElement("div");
+                    mist.style.position = "absolute";
+                    mist.style.top = (i * 30) + "%";
+                    mist.style.left = "-20%";
+                    mist.style.width = "140%";
+                    mist.style.height = "250px";
+                    mist.style.background = "radial-gradient(ellipse at center, rgba(203, 213, 225, 0.15) 0%, transparent 70%)";
+                    mist.style.filter = "blur(40px)";
+                    mist.style.animation = `floatGlow${(i%2)+1} ${40 + i*15}s ease-in-out infinite alternate`;
+                    container.appendChild(mist);
+                }
+            }
+
+            function createCloudyEffect(container) {
+                const cloudGlow = document.createElement("div");
+                cloudGlow.style.position = "absolute";
+                cloudGlow.style.top = "10%";
+                cloudGlow.style.left = "20%";
+                cloudGlow.style.width = "60vw";
+                cloudGlow.style.height = "50vh";
+                cloudGlow.style.background = "radial-gradient(circle, rgba(148, 163, 184, 0.15) 0%, transparent 70%)";
+                cloudGlow.style.filter = "blur(80px)";
+                container.appendChild(cloudGlow);
+            }
+
+            /* ─── Crop Hazard Alert Detection ─── */
+            function checkCropHazards(tempC, windKmh, humidity, desc, code, city, stateName) {
+                const alerts = [];
+                const descLower = desc.toLowerCase();
+
+                // 1. Storm / Thunderstorm hazard
+                const isStorm = descLower.includes("storm") || 
+                                descLower.includes("thunder") || 
+                                descLower.includes("cyclone") || 
+                                descLower.includes("tornado") || 
+                                descLower.includes("squall") || 
+                                [200, 386, 389].includes(code);
+                if (isStorm) {
+                    alerts.push({
+                        type: "storm",
+                        severity: "high",
+                        title: "Incoming Storm Warning",
+                        risk: "High winds, heavy downpours, or hail can break/lodge crops, cause severe waterlogging, or tear protective nets.",
+                        action: "Secure support stakes, clear drainage lines immediately, and postpone planting delicate seedlings."
+                    });
+                }
+
+                // 2. Heavy Rain hazard (if not already storm warning)
+                const isHeavyRain = !isStorm && (
+                                    descLower.includes("heavy rain") || 
+                                    descLower.includes("torrential") || 
+                                    descLower.includes("heavy shower") || 
+                                    [308, 359, 305, 302].includes(code));
+                if (isHeavyRain) {
+                    alerts.push({
+                        type: "heavy-rain",
+                        severity: "moderate",
+                        title: "Heavy Rainfall Alert",
+                        risk: "Potential soil erosion, seed displacement, and high water saturation leading to crop root asphyxiation.",
+                        action: "Ensure run-off paths are clear. Postpone all foliar pesticide spraying or soil fertilizer top-dressing."
+                    });
+                }
+
+                // 3. Extreme Heat / Heatwave hazard
+                if (tempC >= 38) {
+                    alerts.push({
+                        type: "extreme-heat",
+                        severity: "high",
+                        title: "Severe Heatwave Warning",
+                        risk: `High ambient temperature (${tempC}°C) triggers excessive transpiration, leaf scorching, and pollen drying/sterility.`,
+                        action: "Apply deep irrigation in early morning/late evening, use crop straw mulch to retain moisture, and cover fragile crops."
+                    });
+                }
+
+                // 4. Frost / Extreme Cold hazard
+                if (tempC <= 6) {
+                    alerts.push({
+                        type: "frost-risk",
+                        severity: "high",
+                        title: "Frost & Cold Injury Warning",
+                        risk: `Freezing temperatures (${tempC}°C) form ice crystals in crop tissues, causing cell rupture, wilting, or plant death.`,
+                        action: "Apply a light overhead sprinkle at dusk (increases air heat capacity) or cover crops with plastic/thermal sheets."
+                    });
+                }
+
+                // 5. High Wind hazard (if not already storm warning)
+                if (!isStorm && windKmh >= 30) {
+                    alerts.push({
+                        type: "high-wind",
+                        severity: "moderate",
+                        title: "High Winds Alert",
+                        risk: `Strong winds (${windKmh} km/h) risk plant lodging (stems snapping), physical fruit/leaf damage, and accelerated soil drying.`,
+                        action: "Stake tall crop varieties, utilize windbreaks, and avoid spraying powdery agricultural chemicals."
+                    });
+                }
+
+                // 6. Fungal disease outbreak warning (dampness/humidity + warm temperature)
+                if (humidity >= 85 && tempC >= 20 && tempC <= 30) {
+                    alerts.push({
+                        type: "fungal-risk",
+                        severity: "low",
+                        title: "High Fungal Infection Risk",
+                        risk: "Damp conditions (humidity at " + humidity + "%) and warm air facilitate quick spore germination of powdery mildew, rust, or blight.",
+                        action: "Ensure adequate spacing for crop ventilation, prune crowded lower leaves, and inspect for initial leaf spots."
+                    });
+                }
+
+                showAlertPopups(alerts, stateName, city);
+            }
+
+            /* ─── Show Crop Weather Alerts as Toasts ─── */
+            function showAlertPopups(alerts, stateName, city) {
+                const container = document.getElementById("crop-alerts-container");
+                if (!container) return;
+
+                // Clear previous alerts
+                container.innerHTML = "";
+
+                if (alerts.length === 0) {
+                    alerts.push({
+                        type: "optimal",
+                        severity: "optimal",
+                        title: "Optimal Growing Weather",
+                        risk: `Current conditions in ${city} are safe and favorable for plant health. No crop hazards detected.`,
+                        action: "Excellent time for field operations, harvesting, or regular crop maintenance tasks."
+                    });
+                }
+
+                alerts.forEach((alert, index) => {
+                    const toast = document.createElement("div");
+                    toast.className = `crop-alert-toast severity-${alert.severity}`;
+
+                    let badgeText = "Notice";
+                    let iconEmoji = "⚠️";
+                    if (alert.severity === "high") {
+                        badgeText = "Danger Warning";
+                        iconEmoji = "🚨";
+                    } else if (alert.severity === "moderate") {
+                        badgeText = "Alert Warning";
+                        iconEmoji = "⚠️";
+                    } else if (alert.severity === "low") {
+                        badgeText = "Caution Alert";
+                        iconEmoji = "🔍";
+                    } else if (alert.severity === "optimal") {
+                        badgeText = "Optimal Growing Status";
+                        iconEmoji = "🌱";
+                    }
+
+                    toast.innerHTML = `
+                        <div class="crop-alert-glow-bar"></div>
+                        <button class="crop-alert-close" aria-label="Close alert">&times;</button>
+                        <div class="crop-alert-header">
+                            <span class="crop-alert-pulse-icon" style="font-size: 1.4rem;">${iconEmoji}</span>
+                            <div>
+                                <div class="crop-alert-title">${alert.title}</div>
+                                <div class="crop-alert-subtitle">${city}, ${stateName}</div>
+                            </div>
+                        </div>
+                        <span class="crop-alert-badge" style="align-self: flex-start;">${badgeText}</span>
+                        <div class="crop-alert-risk">${alert.risk}</div>
+                        <div class="crop-alert-action">
+                            <span class="crop-alert-action-title">Action Tip:</span>
+                            <span>${alert.action}</span>
+                        </div>
+                    `;
+
+                    // Close button listener
+                    toast.querySelector(".crop-alert-close").addEventListener("click", () => {
+                        toast.classList.remove("show");
+                        setTimeout(() => toast.remove(), 500);
+                    });
+
+                    container.appendChild(toast);
+
+                    // Fade in toast with a stagger delay
+                    setTimeout(() => {
+                        toast.classList.add("show");
+                    }, 100 + index * 200);
+
+                    // Auto dismiss optimal or low alerts after 6 seconds
+                    if (alert.severity === "optimal" || alert.severity === "low") {
+                        setTimeout(() => {
+                            if (toast.parentNode) {
+                                toast.classList.remove("show");
+                                setTimeout(() => toast.remove(), 500);
+                            }
+                        }, 6000);
+                    }
+                });
+            }
+
             /* ─── SVG Map Interaction ─── */
+            let selectedPath = null;
+
             paths.forEach(function(path) {
                 const stateName = path.getAttribute("name");
                 if (!stateName) return;
@@ -1355,15 +2060,24 @@
                 });
                 path.addEventListener("mouseleave", function() {
                     tooltip.style.display = "none";
-                    paths.forEach(p => p.classList.remove("active-state"));
+                    paths.forEach(p => {
+                        if (p !== selectedPath) {
+                            p.classList.remove("active-state");
+                        }
+                    });
                 });
                 path.addEventListener("mouseenter", function() {
-                    paths.forEach(p => p.classList.remove("active-state"));
+                    paths.forEach(p => {
+                        if (p !== selectedPath) {
+                            p.classList.remove("active-state");
+                        }
+                    });
                     path.classList.add("active-state");
                 });
 
                 /* Click → fetch weather */
                 path.addEventListener("click", function() {
+                    selectedPath = path;
                     paths.forEach(p => p.classList.remove("active-state"));
                     path.classList.add("active-state");
 

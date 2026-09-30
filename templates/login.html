@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AgriVision</title>
+    <meta name="description" content="Login to AgriVision AI-powered plant disease detection platform.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="animate-up">
+        <a href="{{ url_for('home') }}" class="logo agrivision-logo-link"
+            style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
+            <span class="logo-img-wrapper">
+                <img src="{{ url_for('static', filename='Main_Logo.png') }}" alt="AgriVision Logo" class="logo-img">
+            </span>
+            <span class="agrivision-brand">Agri<span class="agrivision-accent">Vision</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('team') }}">About Us</a></li>
+            <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
+        </ul>
+        <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+    </nav>
+
+    <main>
+        <section class="auth-page">
+            <!-- Left: Decorative Visual -->
+            <div class="auth-visual animate-right delay-1">
+                <div class="auth-visual-inner">
+                    <img src="{{ url_for('static', filename='ui_images/7.png') }}" alt="Lush Farm Landscape"
+                        class="auth-visual-img">
+                    <div class="auth-visual-overlay"></div>
+                    <div class="auth-visual-content">
+                        <div class="auth-visual-badge">🌿 AgriVision AI Platform</div>
+                        <h2>Welcome Back,<br><span class="glow-text">Farmer</span></h2>
+                        <p>Your crops need you. Log in and let AI safeguard your harvest.</p>
+                        <div class="auth-visual-stats">
+                            <div class="auth-mini-stat">
+                                <span class="auth-stat-num">38+</span>
+                                <span class="auth-stat-label">Diseases Detected</span>
+                            </div>
+                            <div class="auth-mini-stat">
+                                <span class="auth-stat-num">95%</span>
+                                <span class="auth-stat-label">Accuracy Rate</span>
+                            </div>
+                            <div class="auth-mini-stat">
+                                <span class="auth-stat-num">50+</span>
+                                <span class="auth-stat-label">Scans Performed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Login Form -->
+            <div class="auth-form-container animate-up delay-2">
+                <div class="auth-form-card">
+                    <div class="auth-form-header">
+                        <div class="auth-icon-ring">
+                            <span class="auth-icon">🔐</span>
+                        </div>
+                        <h1>Sign In</h1>
+                        <p>Enter your credentials to access your dashboard</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="auth-alert {{ category }}">
+                        <span class="auth-alert-icon">
+                            {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+                        </span>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('login') }}" class="auth-form" id="loginForm">
+                        <div class="auth-input-group">
+                            <label for="email">Email Address</label>
+                            <div class="auth-input-wrapper">
+                                <span class="auth-input-icon">📧</span>
+                                <input type="email" id="email" name="email" placeholder="you@example.com" required
+                                    autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label for="password">Password</label>
+                            <div class="auth-input-wrapper">
+                                <span class="auth-input-icon">🔑</span>
+                                <input type="password" id="password" name="password" placeholder="Enter your password"
+                                    required autocomplete="current-password">
+                                <button type="button" class="auth-toggle-pw" onclick="togglePassword('password', this)"
+                                    aria-label="Toggle password visibility">👁️</button>
+                            </div>
+                        </div>
+
+                        <div class="auth-row">
+                            <label class="auth-checkbox-label">
+                                <input type="checkbox" name="remember" id="remember">
+                                <span class="auth-check-custom"></span>
+                                Remember me
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary auth-submit-btn" id="loginBtn">
+                            <span class="btn-text">Sign In</span>
+                            <span class="btn-loader" style="display:none;">
+                                <span class="spinner"></span>
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <p class="auth-switch-text">
+                        Don't have an account?
+                        <a href="{{ url_for('signup') }}" class="auth-switch-link">Create one now →</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Visual Banner with Image -->
+        <section class="auth-bottom-banner animate-up delay-3">
+            <div class="auth-bottom-visual">
+                <img src="{{ url_for('static', filename='ui_images/9.png') }}" alt="Agricultural Fields Overview"
+                    loading="lazy">
+                <div class="auth-bottom-overlay"></div>
+                <div class="auth-bottom-content">
+                    <h3>Powered by <span class="glow-text">Advanced AI</span></h3>
+                    <p>Computer vision meets agricultural science — identify diseases before they spread.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;">
+        <p>© 2026 AgriVision. Engineered for Agricultural Excellence.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='leaves.js') }}"></script>
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function () {
+            const btn = document.getElementById('loginBtn');
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.btn-loader').style.display = 'inline-flex';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+
+</html>

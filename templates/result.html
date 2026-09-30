@@ -44,6 +44,27 @@
             <li><a href="{{ url_for('weather_map_page') }}">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}" class="active">Diagnose</a></li>
         </ul>
+        {% if current_user %}
+        <div class="nav-user-area">
+            <div class="nav-user-dropdown">
+                <div class="nav-user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+                <div class="nav-dropdown-menu">
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.7;">
+                        <span>👤</span> {{ current_user.first_name }} {{ current_user.last_name }}
+                    </div>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('upload') }}" class="nav-dropdown-item"><span>🔬</span> Diagnose</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="nav-dropdown-item logout"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="nav-user-area">
+            <a href="{{ url_for('login') }}" style="text-decoration:none;"><span style="color:var(--text-light);font-weight:600;font-size:1.05rem;">Login</span></a>
+            <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+        </div>
+        {% endif %}
     </nav>
 
     <main>
@@ -94,10 +115,48 @@
                 </div>
                 {% endif %}
 
-                <a href="{{ url_for('upload') }}" class="btn-primary"
-                    style="text-align: center; width: 100%; font-size: 1.2rem; padding: 1.2rem;">Analyze New Subject</a>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <a href="{{ url_for('upload') }}" class="btn-primary"
+                        style="text-align: center; flex: 1; min-width: 200px; font-size: 1.1rem; padding: 1.1rem;">Analyze New Subject</a>
+                    <a href="{{ url_for('upload', show_history=1) }}#history-section" class="btn-primary"
+                        style="text-align: center; flex: 1; min-width: 200px; font-size: 1.1rem; padding: 1.1rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 16px; text-decoration: none;">📜 View Scan History</a>
+                </div>
             </div>
         </div>
+
+        <!-- ── Crop Recovery & Sustained Yield Showcase ────────── -->
+        <section class="ui-showcase-section ui-showcase-result animate-up delay-3" style="max-width: 1200px;">
+            <div class="ui-showcase-header">
+                <div class="ui-showcase-badge amber">🌾 Agronomic Recovery Guidance</div>
+                <h2 class="ui-showcase-title">Targeting Healthy Yields &amp; <span class="glow-text">Crop Resilience</span></h2>
+                <p class="ui-showcase-desc">Timely diagnosis combined with disciplined crop management restores plant vigour and protects overall harvest commercial quality.</p>
+            </div>
+            <div class="ui-showcase-grid">
+                <div class="ui-visual-card theme-amber">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/9.png') }}" alt="Yield Recovery Target" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag amber">🌾 Harvest Potential</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Yield Recovery &amp; Grain Filling</h3>
+                        <p>Adhering to the prescribed treatment steps and replenishing vital trace minerals restores chlorophyll synthesis, shielding developing grains and fruits from stunted growth.</p>
+                    </div>
+                </div>
+
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/2.png') }}" alt="Sustained Crop Defense Protocol" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag emerald">🌱 Preventive Defense</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Sustained Crop Defense Protocol</h3>
+                        <p>Consistent row aeration, balanced drip irrigation, and sanitizing pruning tools between field passes effectively halts secondary spore dispersal across your acreage.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>

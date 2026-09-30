@@ -439,6 +439,153 @@
             stroke-width: 2.5px !important;
             filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.9)) !important;
         }
+
+        /* Market Analysis Card Styles */
+        .market-badge-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+        .live-dot {
+            color: #10B981;
+            font-size: 0.75rem;
+            animation: pulseGlowIcon 1.5s infinite alternate;
+        }
+        @keyframes pulseGlowIcon {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; filter: drop-shadow(0 0 4px #10B981); }
+        }
+        .market-price-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .market-price-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .market-trend-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .market-trend-up {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .market-trend-down {
+            background: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .market-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 0.5rem 0;
+        }
+        .market-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        .market-grid-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .market-grid-label {
+            color: var(--text-light);
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+        .market-grid-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        .market-cultivation-box {
+            background: rgba(16, 185, 129, 0.03);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .market-section-title {
+            color: var(--primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        .cultivation-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .cultivation-row span {
+            color: var(--text-light);
+        }
+        .cultivation-row strong {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            max-width: 60%;
+        }
+        #back-to-crops-list-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            outline: none;
+        }
+        #back-to-crops-list-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+        .placeholder-market-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .placeholder-icon {
+            font-size: 2rem;
+            animation: bounceSlow 2s infinite ease-in-out;
+        }
+        @keyframes bounceSlow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
     </style>
 </head>
 
@@ -459,7 +606,27 @@
             <li><a href="{{ url_for('weather_map_page') }}">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
-        <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
+        {% if current_user %}
+        <div class="nav-user-area">
+            <div class="nav-user-dropdown">
+                <div class="nav-user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+                <div class="nav-dropdown-menu">
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.7;">
+                        <span>👤</span> {{ current_user.first_name }} {{ current_user.last_name }}
+                    </div>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('upload') }}" class="nav-dropdown-item"><span>🔬</span> Diagnose</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="nav-dropdown-item logout"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="nav-user-area">
+            <a href="{{ url_for('login') }}" style="text-decoration:none;"><span style="color:var(--text-light);font-weight:600;font-size:1.05rem;">Login</span></a>
+            <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+        </div>
+        {% endif %}
     </nav>
 
     <main class="map-section">
@@ -717,8 +884,46 @@
                 <div class="plant-list-container" style="display: none; flex-direction: column; flex-grow: 1; overflow-y: auto; max-height: 480px; padding-right: 0.5rem; margin-top: 1rem;">
                     <!-- Plant item cards will be dynamically populated here -->
                 </div>
+                <!-- Crop Market Details Card (Visible on crop click) -->
+                <div id="crop-market-details-container" style="display: none; flex-direction: column; gap: 1.5rem; margin-top: 1rem;">
+                    <!-- Content will be dynamically populated here -->
+                </div>
             </div>
         </div>
+
+        <!-- ── National Agronomic Terrains & Cultivation Showcase ── -->
+        <section class="ui-showcase-section ui-showcase-map animate-up delay-3" style="max-width: 1300px; padding: 0;">
+            <div class="ui-showcase-header">
+                <div class="ui-showcase-badge emerald">🌾 Pan-Indian Cultivation Geography</div>
+                <h2 class="ui-showcase-title">Agro-Climatic Terrains &amp; <span class="glow-text">Harvest Belts</span></h2>
+                <p class="ui-showcase-desc">From northern alluvial wheat basins to peninsular red-soil terraces, discover how geographic diversity shapes regional cultivation strategies.</p>
+            </div>
+            <div class="ui-showcase-grid">
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/7.png') }}" alt="Golden Grain Belts & Harvest Cycles" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag amber">🌾 Golden Grain Belts</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Alluvial Plains &amp; Cereal Production</h3>
+                        <p>Vast alluvial plains across northern and central states form the backbone of India's staple food production, sustaining extensive wheat, barley, and mustard rotations through seasonal Rabi harvests.</p>
+                    </div>
+                </div>
+
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/4.png') }}" alt="Patchwork Agro-Climatic Diversity" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag emerald">🌱 Multi-Crop Mosaic</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Patchwork Agro-Climatic Diversity</h3>
+                        <p>Over 15 distinct ecological zones cultivate a rich mosaic of pulses, oilseeds, coarse millets, and cash crops, each finely tuned to local rainfall, elevation, and soil nutrient profiles.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <div class="map-tooltip" id="tooltip"></div>
@@ -1424,8 +1629,9 @@
                 const oldLabel = document.getElementById("active-state-label");
                 if (oldLabel) oldLabel.remove();
 
-                // Hide large plant image view
+                // Hide large plant image view and market details
                 document.getElementById("plant-detail-view").style.display = "none";
+                document.getElementById("crop-market-details-container").style.display = "none";
 
                 // Restore details card visibility and layouts
                 document.querySelector(".details-header").style.opacity = 1;
@@ -1457,6 +1663,20 @@
             document.getElementById("close-plant-view").addEventListener("click", function(e) {
                 e.stopPropagation();
                 document.getElementById("plant-detail-view").style.display = "none";
+
+                // If currently showing market/placeholder details, restore the list view
+                const marketContainer = document.getElementById("crop-market-details-container");
+                const listContainer = document.querySelector(".plant-list-container");
+                const activeState = document.querySelector(".state-path.active-state");
+                const stateName = activeState ? activeState.getAttribute("name") : "";
+                
+                if (marketContainer && marketContainer.style.display === "flex") {
+                    marketContainer.style.display = "none";
+                    listContainer.style.display = "flex";
+                    if (stateName) {
+                        cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName}`;
+                    }
+                }
             });
 
             paths.forEach(function(path) {
@@ -1604,6 +1824,108 @@
                                     const detailText = document.getElementById("plant-detail-text");
                                     const activeState = document.querySelector(".state-path.active-state");
                                     const stateName = activeState ? activeState.getAttribute("name") : "";
+                                    const listContainer = document.querySelector(".plant-list-container");
+                                    const marketContainer = document.getElementById("crop-market-details-container");
+                                    
+                                    // Fetch dynamic prices for this state from backend API
+                                    fetch(`/api/crop-prices?state=${encodeURIComponent(stateName)}`)
+                                        .then(response => response.json())
+                                        .then(marketData => {
+                                            const cropData = marketData[cropName];
+                                            if (cropData) {
+                                                listContainer.style.display = "none";
+                                                cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName} - Market Details`;
+                                                
+                                                // Check data source to show corresponding feed indicator
+                                                const sourceLabel = cropData.source === "Live API" ? "Live Government Feed" : "Market Index (Simulated)";
+                                                const sourceDotColor = cropData.source === "Live API" ? "#10B981" : "#FBBF24"; // Green for live, Amber for simulated
+                                                
+                                                marketContainer.innerHTML = `
+                                                    <div class="market-badge-header">
+                                                        <span class="live-dot" style="color: ${sourceDotColor};">●</span> ${sourceLabel}
+                                                    </div>
+                                                    <div class="market-price-box">
+                                                        <span class="market-price-value">${cropData.price}</span>
+                                                        <span class="market-trend-badge ${cropData.trendClass}">${cropData.trendIcon} ${cropData.trendPct}</span>
+                                                    </div>
+                                                    <div class="market-divider"></div>
+                                                    <div class="market-grid">
+                                                        <div class="market-grid-item">
+                                                            <span class="market-grid-label">Govt. MSP</span>
+                                                            <span class="market-grid-value">${cropData.msp}</span>
+                                                        </div>
+                                                        <div class="market-grid-item">
+                                                            <span class="market-grid-label">Primary APMC</span>
+                                                            <span class="market-grid-value">${cropData.apmc}</span>
+                                                        </div>
+                                                        <div class="market-grid-item">
+                                                            <span class="market-grid-label">Traded Volume</span>
+                                                            <span class="market-grid-value">${cropData.volume}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="market-cultivation-box">
+                                                        <h4 class="market-section-title">🌾 Cultivation Profile</h4>
+                                                        <div class="cultivation-row">
+                                                            <span>Sowing:</span>
+                                                            <strong>${cropData.sowing}</strong>
+                                                        </div>
+                                                        <div class="cultivation-row">
+                                                            <span>Harvest:</span>
+                                                            <strong>${cropData.harvest}</strong>
+                                                        </div>
+                                                        <div class="cultivation-row">
+                                                            <span>Water Demand:</span>
+                                                            <strong>${cropData.water}</strong>
+                                                        </div>
+                                                        <div class="cultivation-row">
+                                                            <span>Key Districts:</span>
+                                                            <strong>${cropData.districts}</strong>
+                                                        </div>
+                                                    </div>
+                                                    <button id="back-to-crops-list-btn" class="btn-primary" style="margin-top: 1rem; width: 100%; border-radius: 12px; padding: 0.8rem; font-size: 0.95rem; font-weight: 600;">
+                                                        ← Back to Crop List
+                                                    </button>
+                                                `;
+                                                marketContainer.style.display = "flex";
+                                                
+                                                document.getElementById("back-to-crops-list-btn").addEventListener("click", function(backEv) {
+                                                    backEv.stopPropagation();
+                                                    marketContainer.style.display = "none";
+                                                    listContainer.style.display = "flex";
+                                                    cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName}`;
+                                                    document.getElementById("plant-detail-view").style.display = "none";
+                                                });
+                                            } else {
+                                                // Fallback if crop is not found in the dataset
+                                                listContainer.style.display = "none";
+                                                cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName} - Market Details`;
+                                                
+                                                marketContainer.innerHTML = `
+                                                    <div class="placeholder-market-card">
+                                                        <span class="placeholder-icon">📊</span>
+                                                        <h4 style="color: #fff; font-size: 1.15rem; font-family: 'Space Grotesk', sans-serif;">State Profile under Optimization</h4>
+                                                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-light); margin-bottom: 0;">
+                                                            Detailed APMC daily rates and market analysis for <strong>${stateName}</strong> are currently being indexed.
+                                                        </p>
+                                                        <button id="back-to-crops-list-btn" class="btn-primary" style="margin-top: 1rem; width: 100%; border-radius: 12px; padding: 0.8rem; font-size: 0.95rem; font-weight: 600;">
+                                                            ← Back to Crop List
+                                                        </button>
+                                                    </div>
+                                                `;
+                                                marketContainer.style.display = "flex";
+                                                
+                                                document.getElementById("back-to-crops-list-btn").addEventListener("click", function(backEv) {
+                                                    backEv.stopPropagation();
+                                                    marketContainer.style.display = "none";
+                                                    listContainer.style.display = "flex";
+                                                    cardStateName.innerHTML = `<span class="state-icon">📍</span> ${stateName}`;
+                                                    document.getElementById("plant-detail-view").style.display = "none";
+                                                });
+                                            }
+                                        })
+                                        .catch(err => {
+                                            console.error("Error fetching crop prices:", err);
+                                        });
                                     
                                     // State-specific overrides for key crops
                                     const stateSpecificCrops = {

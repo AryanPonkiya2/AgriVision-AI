@@ -1,0 +1,69 @@
+🌾 A farmer doesn't know the name of the disease destroying his crops.
+He just knows his field is dying.
+
+That thought stayed with me for a long time.
+
+And that's exactly why I built AgriVision. 🌿
+
+---
+
+Not because it was assigned as an MCA Semester 3 project.
+Not because it looked impressive on a resume.
+
+But because there's something deeply uncomfortable about living in a country where 🇮🇳 agriculture feeds 1.4 billion people — and a farmer still has to wait days for an expert to tell him what's wrong with his plant.
+
+---
+
+So here's what I actually built: 👇
+
+You take a photo of a sick plant or fruit. 📸
+AgriVision tells you — in seconds — what disease it has, why it happened, how to stop it, and how to treat it.
+
+Behind that one simple interaction, there's a lot happening:
+
+🤖 → The Plant.id v3 AI API identifies 100+ plant species and 14+ disease categories with confidence scores
+🌱 → The system knows the difference between scanning a plant and scanning a fruit — and gives different treatment advice for each
+🧠 → A full disease knowledge base (rot, blight, mildew, rust, wilt, mosaic, canker, scab, mold, and more) acts as a fallback when the API data is thin
+🗄️ → Every scan is stored in SQLite with the full diagnosis — cause, prevention, treatment — tied to your account
+📊 → Live APMC crop market prices for all 28 Indian states, pulled from data.gov.in, with MSP values, sowing seasons, harvest windows, and water requirements
+🗺️ → Interactive geo-visualization maps and a live weather overlay map for agricultural planning
+📤 → A dedicated export page to download crop market data for any state
+📄 → Auto PDF report generation for every scan — professional enough to show an agronomist
+👥 → A clean team & about page because a project is never just one person
+
+And the UI? ✨
+I wanted it to feel less like a college submission and more like something you'd actually use.
+Smooth, responsive, and built for real people — not professors.
+
+But honestly? The tech is secondary.
+
+---
+
+What I actually learned building this: 💡
+
+→ Real-world APIs are messy 🔧 Plant.id sometimes returns scientific names in unexpected places. I wrote a 107-species name mapper just to make "Solanum lycopersicum" say "Tomato."
+
+→ Government data APIs aren't always available 📡 So I built a deterministic hash-based price simulator that generates consistent daily market prices even offline — farmers can't wait for servers.
+
+→ Guest mode matters more than login 🚪 Not every farmer has the patience or trust to sign up. So I made scanning work without an account at all.
+
+→ I started with JSON files and had to migrate everything to SQLite mid-project 🗃️ without losing existing user data. That taught me more about databases than any textbook ever did.
+
+→ The hardest part wasn't the code. 😅
+It was deciding what to leave out.
+
+---
+
+This is what six months of learning Python, Flask, APIs, databases, and UI design actually looks like when it's applied to something real. 🎯
+
+Not perfect. But purposeful.
+
+If even one person uses this to save a crop — that's enough. 🌱❤️
+
+---
+
+🛠️ Built with: Python · Flask · Plant.id v3 API · SQLite · Flask-SQLAlchemy · OpenCV · Pillow · data.gov.in API · ReportLab · EasyOCR · JavaScript · Gunicorn
+
+---
+
+#AgriVision #BuildingInPublic #Python #Flask #AI #Agriculture #SmartFarming #MCA #MachineLearning #IndianAgriculture #RealProblemRealSolution #StudentProject #TechForGood #PlantDisease #Innovation #DataScience

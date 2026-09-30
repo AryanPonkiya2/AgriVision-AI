@@ -1,0 +1,39 @@
+﻿Rank
+Main Import Country
+Approx Export Share
+Rice
+Saudi Arabia
+18%6
+2
+Cotton
+Bangladesh
+35%
+3
+Sugar
+Indonesia
+22%
+Spices
+United States
+11%
+5
+Coffee
+Italy
+20%6
+Tea
+Russia
+17%
+Groundnut
+Indonesia
+2496
+Grapes
+Netherlands
+289
+9
+Mango
+United Arab Emirates
+559
+10
+Sesame Seeds
+South Korea
+16%
+Crop

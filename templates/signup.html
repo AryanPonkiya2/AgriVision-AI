@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AgriVision</title>
+    <meta name="description" content="Create your AgriVision account to access AI-powered plant disease detection.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <nav class="animate-up">
+        <a href="{{ url_for('home') }}" class="logo agrivision-logo-link"
+            style="text-decoration: none; display: flex; align-items: center; gap: 0.6rem;">
+            <span class="logo-img-wrapper">
+                <img src="{{ url_for('static', filename='Main_Logo.png') }}" alt="AgriVision Logo" class="logo-img">
+            </span>
+            <span class="agrivision-brand">Agri<span class="agrivision-accent">Vision</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('team') }}">About Us</a></li>
+            <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
+        </ul>
+        <a href="{{ url_for('login') }}" class="btn-primary">Sign In</a>
+    </nav>
+
+    <main>
+        <section class="auth-page">
+            <!-- Left: Decorative Visual -->
+            <div class="auth-visual animate-right delay-1">
+                <div class="auth-visual-inner">
+                    <img src="{{ url_for('static', filename='ui_images/5.png') }}" alt="Golden Harvest Fields"
+                        class="auth-visual-img">
+                    <div class="auth-visual-overlay"></div>
+                    <div class="auth-visual-content">
+                        <div class="auth-visual-badge">🚀 Join the Revolution</div>
+                        <h2>Start Your<br><span class="glow-text">Journey</span></h2>
+                        <p>Create an account and unlock the full power of AI-driven crop diagnostics.</p>
+                        <div class="auth-visual-features">
+                            <div class="auth-feature-pill">
+                                <span>🌱</span> Instant Disease Detection
+                            </div>
+                            <div class="auth-feature-pill">
+                                <span>📊</span> Scan History Tracking
+                            </div>
+                            <div class="auth-feature-pill">
+                                <span>🗺️</span> Crop & Weather Maps
+                            </div>
+                            <div class="auth-feature-pill">
+                                <span>💊</span> Treatment Recommendations
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Signup Form -->
+            <div class="auth-form-container animate-up delay-2">
+                <div class="auth-form-card">
+                    <div class="auth-form-header">
+                        <div class="auth-icon-ring">
+                            <span class="auth-icon">🌿</span>
+                        </div>
+                        <h1>Create Account</h1>
+                        <p>Join thousands of farmers using AI for crop protection</p>
+                    </div>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="auth-alert {{ category }}">
+                        <span class="auth-alert-icon">
+                            {% if category == 'error' %}⚠️{% elif category == 'success' %}✅{% else %}ℹ️{% endif %}
+                        </span>
+                        <span>{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{{ url_for('signup') }}" class="auth-form" id="signupForm">
+                        <div class="auth-input-row">
+                            <div class="auth-input-group">
+                                <label for="first_name">First Name</label>
+                                <div class="auth-input-wrapper">
+                                    <span class="auth-input-icon">👤</span>
+                                    <input type="text" id="first_name" name="first_name" placeholder="John" required
+                                        autocomplete="given-name">
+                                </div>
+                            </div>
+                            <div class="auth-input-group">
+                                <label for="last_name">Last Name</label>
+                                <div class="auth-input-wrapper">
+                                    <span class="auth-input-icon">👤</span>
+                                    <input type="text" id="last_name" name="last_name" placeholder="Doe" required
+                                        autocomplete="family-name">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label for="email">Email Address</label>
+                            <div class="auth-input-wrapper">
+                                <span class="auth-input-icon">📧</span>
+                                <input type="email" id="email" name="email" placeholder="you@example.com" required
+                                    autocomplete="email">
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label for="password">Password</label>
+                            <div class="auth-input-wrapper">
+                                <span class="auth-input-icon">🔑</span>
+                                <input type="password" id="password" name="password"
+                                    placeholder="Min. 6 characters" required minlength="6"
+                                    autocomplete="new-password">
+                                <button type="button" class="auth-toggle-pw" onclick="togglePassword('password', this)"
+                                    aria-label="Toggle password visibility">👁️</button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bars">
+                                    <div class="strength-bar" id="bar1"></div>
+                                    <div class="strength-bar" id="bar2"></div>
+                                    <div class="strength-bar" id="bar3"></div>
+                                    <div class="strength-bar" id="bar4"></div>
+                                </div>
+                                <span class="strength-text" id="strengthText"></span>
+                            </div>
+                        </div>
+
+                        <div class="auth-input-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <div class="auth-input-wrapper">
+                                <span class="auth-input-icon">🔒</span>
+                                <input type="password" id="confirm_password" name="confirm_password"
+                                    placeholder="Re-enter your password" required minlength="6"
+                                    autocomplete="new-password">
+                                <button type="button" class="auth-toggle-pw"
+                                    onclick="togglePassword('confirm_password', this)"
+                                    aria-label="Toggle password visibility">👁️</button>
+                            </div>
+                            <div class="password-match-status" id="matchStatus"></div>
+                        </div>
+
+                        <div class="auth-row">
+                            <label class="auth-checkbox-label">
+                                <input type="checkbox" name="agree_terms" id="agree_terms" required>
+                                <span class="auth-check-custom"></span>
+                                I agree to the <a href="#" class="auth-link">Terms of Service</a> and <a href="#"
+                                    class="auth-link">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary auth-submit-btn" id="signupBtn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="btn-loader" style="display:none;">
+                                <span class="spinner"></span>
+                            </span>
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <p class="auth-switch-text">
+                        Already have an account?
+                        <a href="{{ url_for('login') }}" class="auth-switch-link">Sign in here →</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Visual Grid with Images -->
+        <section class="auth-bottom-gallery animate-up delay-3">
+            <div class="auth-gallery-grid">
+                <div class="auth-gallery-item">
+                    <img src="{{ url_for('static', filename='ui_images/3.png') }}" alt="Smart Agriculture"
+                        loading="lazy">
+                    <div class="auth-gallery-overlay"></div>
+                    <span class="auth-gallery-caption">Smart Agriculture</span>
+                </div>
+                <div class="auth-gallery-item">
+                    <img src="{{ url_for('static', filename='ui_images/10.png') }}" alt="AI Crop Analysis"
+                        loading="lazy">
+                    <div class="auth-gallery-overlay"></div>
+                    <span class="auth-gallery-caption">AI Crop Analysis</span>
+                </div>
+                <div class="auth-gallery-item">
+                    <img src="{{ url_for('static', filename='ui_images/8.png') }}" alt="Harvest Intelligence"
+                        loading="lazy">
+                    <div class="auth-gallery-overlay"></div>
+                    <span class="auth-gallery-caption">Harvest Intelligence</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer
+        style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem;">
+        <p>© 2026 AgriVision. Engineered for Agricultural Excellence.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='leaves.js') }}"></script>
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+
+        // Password strength meter
+        const pwInput = document.getElementById('password');
+        const bars = [document.getElementById('bar1'), document.getElementById('bar2'),
+        document.getElementById('bar3'), document.getElementById('bar4')];
+        const strengthText = document.getElementById('strengthText');
+
+        pwInput.addEventListener('input', function () {
+            const val = this.value;
+            let score = 0;
+            if (val.length >= 6) score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+            if (/[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val)) score++;
+
+            const colors = ['#ef4444', '#f59e0b', '#38bdf8', '#10b981'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+            bars.forEach((bar, i) => {
+                if (i < score) {
+                    bar.style.background = colors[score - 1];
+                    bar.style.boxShadow = `0 0 8px ${colors[score - 1]}`;
+                } else {
+                    bar.style.background = 'rgba(255,255,255,0.08)';
+                    bar.style.boxShadow = 'none';
+                }
+            });
+            strengthText.textContent = val.length > 0 ? labels[score - 1] || 'Too short' : '';
+            strengthText.style.color = val.length > 0 ? (colors[score - 1] || '#94a3b8') : '';
+        });
+
+        // Password match check
+        const confirmInput = document.getElementById('confirm_password');
+        const matchStatus = document.getElementById('matchStatus');
+        confirmInput.addEventListener('input', function () {
+            if (this.value.length > 0) {
+                if (this.value === pwInput.value) {
+                    matchStatus.textContent = '✅ Passwords match';
+                    matchStatus.style.color = '#10b981';
+                } else {
+                    matchStatus.textContent = '❌ Passwords do not match';
+                    matchStatus.style.color = '#ef4444';
+                }
+            } else {
+                matchStatus.textContent = '';
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            if (pwInput.value !== confirmInput.value) {
+                e.preventDefault();
+                matchStatus.textContent = '❌ Passwords do not match';
+                matchStatus.style.color = '#ef4444';
+                confirmInput.focus();
+                return;
+            }
+            const btn = document.getElementById('signupBtn');
+            btn.querySelector('.btn-text').style.display = 'none';
+            btn.querySelector('.btn-loader').style.display = 'inline-flex';
+            btn.disabled = true;
+        });
+    </script>
+</body>
+
+</html>

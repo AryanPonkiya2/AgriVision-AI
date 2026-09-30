@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - AgriVision</title>
+    <title>About Us - AgriVison</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
@@ -254,12 +254,32 @@
             <li><a href="{{ url_for('weather_map_page') }}">Weather Map</a></li>
             <li><a href="{{ url_for('upload') }}">Diagnose</a></li>
         </ul>
-        <a href="{{ url_for('upload') }}" class="btn-primary">Try Now</a>
+        {% if current_user %}
+        <div class="nav-user-area">
+            <div class="nav-user-dropdown">
+                <div class="nav-user-avatar">{{ current_user.first_name[0] }}{{ current_user.last_name[0] }}</div>
+                <div class="nav-dropdown-menu">
+                    <div class="nav-dropdown-item" style="pointer-events:none; opacity:0.7;">
+                        <span>👤</span> {{ current_user.first_name }} {{ current_user.last_name }}
+                    </div>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('upload') }}" class="nav-dropdown-item"><span>🔬</span> Diagnose</a>
+                    <div class="nav-dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}" class="nav-dropdown-item logout"><span>🚪</span> Logout</a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="nav-user-area">
+            <a href="{{ url_for('login') }}" style="text-decoration:none;"><span style="color:var(--text-light);font-weight:600;font-size:1.05rem;">Login</span></a>
+            <a href="{{ url_for('signup') }}" class="btn-primary">Sign Up</a>
+        </div>
+        {% endif %}
     </nav>
     <main>
         <!-- ── Hero ───────────────────────────────────────────── -->
         <div class="team-hero animate-up delay-1">
-            <h1>About <span class="glow-text">AgriVision</span></h1>
+            <h1>About <span class="glow-text">AgriVison</span></h1>
             <p>
                 AgriVision is an intelligent disease detection system designed to detect diseases in
                 <strong style="color:var(--text-main);">plants, leaves, and fruits</strong>
@@ -286,18 +306,51 @@
             </div>
             <div class="project-card">
                 <div class="card-icon">📊</div>
-                <h3>95% Accuracy</h3>
-                <p>Achieved through careful dataset augmentation, transfer learning, and dropout regularization
-                    techniques.</p>
+                <h3>95%+ Accuracy</h3>
+                <p>Powered by the advanced Plant.id AI classification engine, trained on millions of global botanical specimens.</p>
             </div>
         </div>
+
+        <!-- ── Vision & Field Impact Showcase ─────────────────── -->
+        <section class="ui-showcase-section ui-showcase-team animate-up delay-2">
+            <div class="ui-showcase-header">
+                <div class="ui-showcase-badge">🌾 Our Agronomic Purpose</div>
+                <h2 class="ui-showcase-title">Empowering Agriculture Through <span class="glow-text">Intelligent Vision</span></h2>
+                <p class="ui-showcase-desc">Bridging deep machine learning with grassroots agronomy to protect crop yields, support rural growers, and build climate-resilient farming futures.</p>
+            </div>
+            <div class="ui-showcase-grid">
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/5.png') }}" alt="Cultivating Sustainable Agricultural Futures" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag emerald">🌱 Mission &amp; Innovation</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>Cultivating Sustainable Agricultural Futures</h3>
+                        <p>Designed to empower smallholders and agricultural researchers with instant botanical AI diagnostics, fostering sustainable cultivation, reducing disease spread, and curbing chemical runoff.</p>
+                    </div>
+                </div>
+
+                <div class="ui-visual-card">
+                    <div class="ui-card-media">
+                        <img src="{{ url_for('static', filename='ui_images/10.png') }}" alt="From Research to Community Impact" loading="lazy">
+                        <div class="ui-card-media-overlay"></div>
+                        <span class="ui-card-tag amber">🏡 Rural Community Impact</span>
+                    </div>
+                    <div class="ui-card-body">
+                        <h3>From Academic Research to Field Impact</h3>
+                        <p>Connecting academic computer vision models directly to agrarian communities, providing accessible disease detection that safeguards family farms and local food systems.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <hr class="section-divider">
 
         <!-- ── Team ───────────────────────────────────────────── -->
         <div class="team-section animate-up delay-3">
             <h2 class="team-section-title">Meet the <span class="glow-text">Team</span></h2>
-            <p class="team-section-subtitle">The passionate students behind AgriVision</p>
+            <p class="team-section-subtitle">The passionate students behind AgriVison</p>
 
             <div class="team-grid">
 
@@ -333,7 +386,7 @@
 
     <footer
         style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2rem;">
-        <p>© 2026 AgriVision. Engineered for Agricultural Excellence.</p>
+        <p>© 2026 AgriVison. Engineered for Agricultural Excellence.</p>
     </footer>
 
     <script src="{{ url_for('static', filename='leaves.js') }}"></script>
