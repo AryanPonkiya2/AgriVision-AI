@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - AgriVison</title>
+    <title>About Us - AgriVision</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap"
@@ -140,10 +140,28 @@
             opacity: 1;
         }
 
-        /* Leader card special accent */
-        .member-card.leader {
-            border-color: rgba(16, 185, 129, 0.4);
-            background: linear-gradient(135deg, rgba(10, 28, 22, 0.95), rgba(10, 20, 40, 0.9));
+        /* Category specific avatar, card & badge styles */
+        .member-card.card-ai::before {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(56, 189, 248, 0.3));
+        }
+        .member-card.card-dev::before {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.4), rgba(99, 102, 241, 0.3));
+        }
+        .member-card.card-data::before {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(236, 72, 153, 0.3));
+        }
+
+        .member-card.card-ai:hover {
+            box-shadow: 0 20px 50px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.45);
+        }
+        .member-card.card-dev:hover {
+            box-shadow: 0 20px 50px rgba(56, 189, 248, 0.2);
+            border-color: rgba(56, 189, 248, 0.45);
+        }
+        .member-card.card-data:hover {
+            box-shadow: 0 20px 50px rgba(168, 85, 247, 0.2);
+            border-color: rgba(168, 85, 247, 0.45);
         }
 
         .member-avatar {
@@ -160,19 +178,24 @@
             letter-spacing: -1px;
         }
 
-        .avatar-leader {
+        .avatar-ai {
             background: linear-gradient(135deg, #10b981, #059669);
-            box-shadow: 0 0 24px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.45);
         }
 
-        .avatar-member {
+        .avatar-dev {
             background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-            box-shadow: 0 0 24px rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.45);
+        }
+
+        .avatar-data {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            box-shadow: 0 0 24px rgba(168, 85, 247, 0.45);
         }
 
         .member-role-badge {
             display: inline-block;
-            padding: 0.25rem 0.9rem;
+            padding: 0.3rem 0.95rem;
             border-radius: 20px;
             font-size: 0.78rem;
             font-weight: 600;
@@ -181,16 +204,22 @@
             margin-bottom: 0.8rem;
         }
 
-        .badge-leader {
-            background: rgba(16, 185, 129, 0.15);
-            color: #10b981;
+        .badge-ai {
+            background: rgba(16, 185, 129, 0.14);
+            color: #34d399;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        .badge-member {
-            background: rgba(56, 189, 248, 0.12);
+        .badge-dev {
+            background: rgba(56, 189, 248, 0.14);
             color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.25);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .badge-data {
+            background: rgba(168, 85, 247, 0.14);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
         }
 
         .member-name {
@@ -211,8 +240,16 @@
             word-break: break-all;
         }
 
-        .member-email:hover {
+        .member-card.card-ai .member-email:hover {
+            color: #34d399;
+        }
+
+        .member-card.card-dev .member-email:hover {
             color: #38bdf8;
+        }
+
+        .member-card.card-data .member-email:hover {
+            color: #c084fc;
         }
 
         /* University badge */
@@ -279,7 +316,7 @@
     <main>
         <!-- ── Hero ───────────────────────────────────────────── -->
         <div class="team-hero animate-up delay-1">
-            <h1>About <span class="glow-text">AgriVison</span></h1>
+            <h1>About <span class="glow-text">AgriVision</span></h1>
             <p>
                 AgriVision is an intelligent disease detection system designed to detect diseases in
                 <strong style="color:var(--text-main);">plants, leaves, and fruits</strong>
@@ -350,27 +387,37 @@
         <!-- ── Team ───────────────────────────────────────────── -->
         <div class="team-section animate-up delay-3">
             <h2 class="team-section-title">Meet the <span class="glow-text">Team</span></h2>
-            <p class="team-section-subtitle">The passionate students behind AgriVison</p>
+            <p class="team-section-subtitle">The passionate students behind AgriVision</p>
 
             <div class="team-grid">
 
-                <!-- Leader 1 -->
-                <div class="member-card leader">
-                    <div class="member-avatar avatar-leader">AP</div>
-                    <span class="member-role-badge badge-leader">👑 Leader</span>
+                <!-- Member 1: Aryan Ponkiya -->
+                <div class="member-card card-ai">
+                    <div class="member-avatar avatar-ai">AP</div>
+                    <span class="member-role-badge badge-ai">🤖 AI &amp; Machine Learning</span>
                     <div class="member-name">Aryan Ponkiya</div>
                     <a class="member-email" href="mailto:aryanpatel09395@gmail.com">
                         ✉️ aryanpatel09395@gmail.com
                     </a>
                 </div>
 
-                <!-- Leader 2 -->
-                <div class="member-card leader">
-                    <div class="member-avatar avatar-leader">RK</div>
-                    <span class="member-role-badge badge-leader">👑 Leader</span>
+                <!-- Member 2: Kausar Rami -->
+                <div class="member-card card-dev">
+                    <div class="member-avatar avatar-dev">KR</div>
+                    <span class="member-role-badge badge-dev">💻 Full Stack Development</span>
                     <div class="member-name">Kausar Rami</div>
                     <a class="member-email" href="mailto:ramikausar@gmail.com">
                         ✉️ ramikausar@gmail.com
+                    </a>
+                </div>
+
+                <!-- Member 3: Vraj Akbari -->
+                <div class="member-card card-data">
+                    <div class="member-avatar avatar-data">VA</div>
+                    <span class="member-role-badge badge-data">📊 Data Science &amp; Analytics</span>
+                    <div class="member-name">Vraj Akbari</div>
+                    <a class="member-email" href="mailto:vrajakbari95@gmail.com">
+                        ✉️ vrajakbari95@gmail.com
                     </a>
                 </div>
 
@@ -386,7 +433,7 @@
 
     <footer
         style="text-align: center; padding: 4rem 5%; color: var(--text-light); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2rem;">
-        <p>© 2026 AgriVison. Engineered for Agricultural Excellence.</p>
+        <p>© 2026 AgriVision. Engineered for Agricultural Excellence.</p>
     </footer>
 
     <script src="{{ url_for('static', filename='leaves.js') }}"></script>
