@@ -355,7 +355,7 @@ def create_report():
          "Weather Map interface. Configures cloudy animated background layers and glows mapping climatic variables across states."),
         
         ("templates/team.html", "HTML Template", "12.4 KB", 
-         "Team bio page. Contains bio cards for project team Aryan Ponkiya, Kausar Rami, and Vraj Akbari. Corrected to attribute accuracy directly to the Plant.id engine integration."),
+         "Team bio page. Contains bio cards for project team Aryan Ponkiya, Vraj Akbari, and Kausar Rami. Corrected to attribute accuracy directly to the Plant.id engine integration."),
         
         ("static/style.css", "CSS Stylesheet", "14.4 KB", 
          "Global style sheet. Declares CSS variables, animations (animate-up, floatGlow), responsive flex/grid layouts, scrollbar behavior, and custom glassmorphic styling (backdrop-filters)."),
